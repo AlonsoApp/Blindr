@@ -8,6 +8,7 @@ import java.util.ArrayList;
  * Created by alonsousa on 6/12/15.
  *
  */
+// This is a git example
 public class WifiAPRow extends WifiAP {
 
     public static final int[] allCircleRes = new int[]{
