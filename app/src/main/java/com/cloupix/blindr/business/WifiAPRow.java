@@ -22,7 +22,6 @@ public class WifiAPRow extends WifiAP {
     private int imgCircleRes;
     private int apNumber;
 
-
     public WifiAPRow() {
         imgCircleRes = R.mipmap.purple_circle;
         apNumber = 1;
