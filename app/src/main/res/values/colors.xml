@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#5067c1</color>
+    <color name="map_background">#f0f0f0</color>
+    <color name="list_line">#cbcbcb</color>
+    <color name="text_grey_bright">#383838</color>
+    <color name="text_grey_dark">#282828</color>
+    <color name="text_green_on">#4CAF50</color>
+    <color name="text_red_off">#F44336</color>
+    <color name="circle_purple">#7a54c5</color>
+    <color name="circle_green">#5ab963</color>
+    <color name="circle_red">#f95b45</color>
+    <color name="circle_amber">#feca00</color>
+    <color name="circle_blue">#5067c1</color>
+    <color name="circle_grey">#607D8B</color>
+    <color name="circle_pink">#E91E63</color>
+</resources>

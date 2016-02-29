@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer name="sector_height">9</integer>
+    <integer name="sector_width">10</integer>
+
+</resources>
