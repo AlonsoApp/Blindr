@@ -47,6 +47,10 @@ public class FingerprintingFragment  extends Fragment implements AdapterView.OnI
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 
+        // Método que se ejecuta cuando pulsas un sector (un cuadradito).
+        // Aqui hay que guardad (o hacer y guardar) la lectura de los wifis que vea en ese momento con todos sus datos
+        // Recomiendo. Poner una barra de progreso mientras (durante un tiempo determinado) se recopilan muestras de los diferentes APs y se marque la casilla con un tick
+
         Snackbar.make(getView(), position + "", Snackbar.LENGTH_LONG).setAction("Action", null).show();
     }
 
