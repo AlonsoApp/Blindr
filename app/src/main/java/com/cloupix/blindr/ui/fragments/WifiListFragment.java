@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.cloupix.blindr.R;
 import com.cloupix.blindr.business.WifiAPListAdapter;
+import com.cloupix.blindr.logic.WifiLogic;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -27,11 +28,12 @@ import java.util.List;
  * Created by alonsousa on 6/12/15.
  *
  */
-public class WifiListFragment extends ListFragment {
+public class WifiListFragment extends ListFragment implements WifiLogic.WifiLogicScannCallbacks {
 
     private WifiAPListAdapter listAdapter;
     private View viewFooter;
     private WifiManager wifi;
+    private WifiLogic wifiLogic;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,13 +65,27 @@ public class WifiListFragment extends ListFragment {
         listAdapter.addWifiAP(new WifiAP("Ludee", "MC5", new ArrayList<WifiAPLecture>(){{ add(new WifiAPLecture(-50));}}));
         listAdapter.notifyDataSetChanged();
         */
-        scann();
+
+        if(wifiLogic==null)
+            wifiLogic = new WifiLogic(getActivity());
+
+        wifiLogic.startScan(this, WifiLogic.SCAN_LOOP_INIFINITE);
 
         // Esto va en el load
         getListView().removeFooterView(viewFooter);
         if(listAdapter.getCount()>0) {
             getListView().addFooterView(viewFooter);
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if(wifiLogic==null)
+            wifiLogic = new WifiLogic(getActivity());
+
+        wifiLogic.stopScan();
     }
 
     @Override
@@ -95,33 +111,15 @@ public class WifiListFragment extends ListFragment {
         */
     }
 
-    // TODO ordenar la lista en función de RSSID (mirar que pasa con el 3 que tiene el SSID en blanco)(mostrar más datos)
-    private void scann(){
-        wifi = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
-        if (!wifi.isWifiEnabled())
-        {
-            Toast.makeText(getActivity().getApplicationContext(), getString(R.string.wifi_disabled), Toast.LENGTH_LONG).show();
-            wifi.setWifiEnabled(true);
-        }
-        //this.adapter = new SimpleAdapter(WiFiDemo.this, arraylist, R.layout.row, new String[] { ITEM_KEY }, new int[] { R.id.list_value });
-        //lv.setAdapter(this.adapter);
+    @Override
+    public void onReceive(List<ScanResult> results, int loopCounter) {
+        listAdapter.addScanResultList(results);
+        listAdapter.notifyDataSetChanged();
+    }
 
-        getActivity().registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context c, Intent intent) {
-                try {
+    @Override
+    public void onScanFinished() {
 
-                    List<ScanResult> results = wifi.getScanResults();
-                    listAdapter.addScanResultList(results);
-                    listAdapter.notifyDataSetChanged();
-                    wifi.startScan();
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-
-        wifi.startScan();
     }
 
     // Network
@@ -142,6 +140,5 @@ public class WifiListFragment extends ListFragment {
             e.printStackTrace();
         }
     }
-
 }
 

@@ -233,6 +233,7 @@ public class WifiAPListAdapter extends BaseAdapter {
             if(!exists) {
                 // TODO Echar un opjo a esto a ver si da lo que tiene que dar
                 int circleRes = WifiAPRow.allCircleRes[listWifiAPRow.size() % WifiAPRow.allCircleRes.length];
+                // Aqui es donde sacamos todo lo que queremos del scanResult
                 WifiAPRow newRow = new WifiAPRow(scanResult.SSID, scanResult.BSSID, wifiAPLecture, circleRes, listWifiAPRow.size()+1);
                 listWifiAPRow.add(newRow);
             }

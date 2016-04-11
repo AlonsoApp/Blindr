@@ -22,12 +22,10 @@ public class GridAdapter extends BaseAdapter {
     private ArrayList<MapSector> listMapSectors;
 
 
-    private static final int[][] strokes = new int[][]{
-            { 0, 1, 2, 3, 5, 6, 7, 8, 9, 35, 36, 37, 38, 39, 40, 41, 42, 43 }, /* N */
-            { 4, 9, 14, 19, 29, 39, 44, 49, 54, 59, 64, 69, 74, 79, 84, 89 }, /* E */
-            { 80, 81, 82, 83, 84, 85, 86, 87, 88, 89 }, /* S */
-            { 0, 10, 20, 30, 40, 50, 60, 70, 80 }  /* W */
-    };
+    // Este es el mapa, establece en que sectores hay que pintar el stroke N, E, S y W
+    // aqui digamos que pintas las paredes
+
+    private int[][] strokes;
 
     /*
     private static final int[] nStroke = new int[]{1};
@@ -40,6 +38,13 @@ public class GridAdapter extends BaseAdapter {
         mContext = c;
         listMapSectors = new ArrayList<>();
         this.mInflater = LayoutInflater.from(c);
+
+        strokes = new int[][]{
+                mContext.getResources().getIntArray(R.array.sector_n), /* N */
+                mContext.getResources().getIntArray(R.array.sector_e), /* E */
+                mContext.getResources().getIntArray(R.array.sector_s), /* S */
+                mContext.getResources().getIntArray(R.array.sector_w)  /* W */
+        };
 
         int sectorWidth = c.getResources().getInteger(R.integer.sector_width);
         int sectorHeight = c.getResources().getInteger(R.integer.sector_height);
@@ -88,13 +93,17 @@ public class GridAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        MapSector mapSctor = listMapSectors.get(position);
+        MapSector mapSector = listMapSectors.get(position);
 
         // Dibujos
-        holder.nStroke.setVisibility(mapSctor.getStroke()[0]?View.VISIBLE:View.INVISIBLE);
-        holder.eStroke.setVisibility(mapSctor.getStroke()[1]?View.VISIBLE:View.INVISIBLE);
-        holder.sStroke.setVisibility(mapSctor.getStroke()[2]?View.VISIBLE:View.INVISIBLE);
-        holder.wStroke.setVisibility(mapSctor.getStroke()[3]?View.VISIBLE:View.INVISIBLE);
+        holder.nStroke.setVisibility(mapSector.getStroke()[0]?View.VISIBLE:View.INVISIBLE);
+        holder.eStroke.setVisibility(mapSector.getStroke()[1]?View.VISIBLE:View.INVISIBLE);
+        holder.sStroke.setVisibility(mapSector.getStroke()[2]?View.VISIBLE:View.INVISIBLE);
+        holder.wStroke.setVisibility(mapSector.getStroke()[3]?View.VISIBLE:View.INVISIBLE);
+
+        // Completed or not
+        int color = mapSector.isCompleted()? mContext.getColor(android.R.color.holo_green_light):mContext.getColor(android.R.color.transparent);
+        holder.imgViewSector.setBackgroundColor(color);
 
 
         return convertView;
@@ -105,5 +114,12 @@ public class GridAdapter extends BaseAdapter {
     static class ViewHolder {
         SquareImageView imgViewSector;
         View nStroke, eStroke, sStroke, wStroke;
+    }
+
+    // Helpers
+
+    public void setSectorComplete(int position){
+        listMapSectors.get(position).setCompleted(true);
+        notifyDataSetChanged();
     }
 }

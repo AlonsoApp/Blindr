@@ -9,9 +9,15 @@ public class MapSector {
     // [ N, E, S, W ]
     private boolean[] stroke = new boolean[]{false, false, false, false};
 
+    private boolean completed= false;
+
     public MapSector() {
 
     }
+
+    // Seguramente aqui tengamos que poner lo de completado o no. Esta clase es solo visual,
+    // aqui no guardamso nada de info (que yo recuerde al menos, ya veremos que ando un poco
+    // perdido que hace 4 meeses que no toco esto)
 
     public boolean isnStroke() {
         return stroke[0];
@@ -51,5 +57,13 @@ public class MapSector {
 
     public void setStroke(boolean[] stroke) {
         this.stroke = stroke;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 }
