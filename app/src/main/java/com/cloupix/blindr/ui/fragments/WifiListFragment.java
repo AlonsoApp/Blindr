@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import com.cloupix.blindr.R;
 import com.cloupix.blindr.business.WifiAPListAdapter;
 import com.cloupix.blindr.logic.WifiLogic;
+import com.cloupix.blindr.ui.activities.WifiAPDetailActivity;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -109,6 +111,13 @@ public class WifiListFragment extends ListFragment implements WifiLogic.WifiLogi
         changeConfigDialog.setChangeConfigDialogCallbacks(this);
         changeConfigDialog.show(getActivity().getFragmentManager(), "ChangeConfigDialogListener");
         */
+
+        // Sacamos el BSSI del AP d ela posición position
+        String bssi = listAdapter.getBSSI(position);
+
+        Intent intent = new Intent(getActivity(), WifiAPDetailActivity.class);
+        intent.putExtra(WifiAPDetailActivity.EXTRA_BSSI, bssi);
+        startActivity(intent);
     }
 
     @Override

@@ -55,6 +55,13 @@ public class FingerprintingFragment  extends Fragment implements AdapterView.OnI
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        if (wifiLogic !=null)
+            wifiLogic.stopScan();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_fingerprint, container, false);
 
