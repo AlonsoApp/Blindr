@@ -4,4 +4,8 @@
     <string name="wifi_disabled">WiFi desactivado, Activalo</string>
     <string name="bssid">BSSID:</string>
     <string name="title_activity_wifi_apdetail">WifiAP Detail</string>
+    <string name="map_name">Map name</string>
+    <string name="height">Height</string>
+    <string name="width">Width</string>
+    <string name="untitled_map">Untitled map</string>
 </resources>

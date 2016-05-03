@@ -18,8 +18,6 @@ import java.util.TreeMap;
  */
 public class BarChartLogic extends ChartLogic {
 
-    private BarData data;
-
     public void setupChart(BarChart barChart, WifiAP detailedWifiAP) {
         ArrayList<BarEntry> entries = new ArrayList<>();
         ArrayList<String> labels = new ArrayList<String>();
@@ -44,8 +42,7 @@ public class BarChartLogic extends ChartLogic {
         dataset.setColor(Color.rgb(244, 117, 117));
 
 
-
-        data = new BarData(labels, dataset);
+        BarData data = new BarData(labels, dataset);
         barChart.setData(data);
         // dont forget to refresh the drawing
         barChart.invalidate();

@@ -42,6 +42,41 @@
             android:background="@android:color/holo_blue_light"
             android:layout_alignParentStart="true"/>
 
+        <View
+            android:id="@+id/neswStroke"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:rotation="-45"
+            android:background="@android:color/holo_blue_light"
+            android:layout_centerInParent="true"/>
+        <View
+            android:id="@+id/nwseStroke"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:rotation="45"
+            android:background="@android:color/holo_blue_light"
+            android:layout_centerInParent="true"/>
+
+        <ImageView
+            android:id="@+id/imgViewCircle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="20dp"
+            android:layout_centerHorizontal="true"
+            android:src="@mipmap/purple_circle"/>
+
+        <TextView
+            android:id="@+id/textViewApNumber"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="25dp"
+            android:layout_centerHorizontal="true"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="1"/>
+
 
 
     </RelativeLayout>

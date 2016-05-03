@@ -16,4 +16,6 @@
     <color name="circle_blue">#5067c1</color>
     <color name="circle_grey">#607D8B</color>
     <color name="circle_pink">#E91E63</color>
+    <color name="wall_on">#282828</color>
+    <color name="wall_off">#cbcbcb</color>
 </resources>

@@ -2,7 +2,6 @@ package com.cloupix.blindr.ui.fragments;
 
 import android.app.Fragment;
 import android.net.wifi.ScanResult;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
@@ -13,15 +12,12 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 
 import com.cloupix.blindr.R;
-import com.cloupix.blindr.business.GridAdapter;
+import com.cloupix.blindr.business.adapters.GridAdapter;
+import com.cloupix.blindr.business.Lecture;
 import com.cloupix.blindr.business.WifiAP;
-import com.cloupix.blindr.business.WifiAPComparator;
-import com.cloupix.blindr.business.WifiAPLecture;
-import com.cloupix.blindr.business.WifiAPRow;
 import com.cloupix.blindr.logic.WifiLogic;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -29,7 +25,7 @@ import java.util.List;
  * Created by alonsousa on 15/12/15.
  *
  */
-public class FingerprintingFragment  extends Fragment implements AdapterView.OnItemClickListener, WifiLogic.WifiLogicScannCallbacks {
+public class FingerprintingFragment extends Fragment implements AdapterView.OnItemClickListener, WifiLogic.WifiLogicScannCallbacks {
 
     public static final String TAG = "fragment_photo";
 
@@ -130,7 +126,7 @@ public class FingerprintingFragment  extends Fragment implements AdapterView.OnI
 
         for(ScanResult scanResult : scanResultList) {
             // Creamos el envelope
-            WifiAPLecture wifiAPLecture = new WifiAPLecture(scanResult);
+            Lecture lecture = new Lecture(scanResult);
 
             if(wifiApMatrix[scanningPosition]== null)
                 wifiApMatrix[scanningPosition] = new ArrayList<WifiAP>();
@@ -141,7 +137,7 @@ public class FingerprintingFragment  extends Fragment implements AdapterView.OnI
                 if(cell.getBSSID().equals(scanResult.BSSID)){
 
                     // Lo metemos en la lista de lecturas de la celda
-                    cell.addWifiAPLecture(wifiAPLecture);
+                    cell.addWifiAPLecture(lecture);
                     exists = true;
                     break;
                 }
@@ -149,7 +145,7 @@ public class FingerprintingFragment  extends Fragment implements AdapterView.OnI
             // Si no existía lo creamos y le asignamos un numero y un color de circulo
             if(!exists) {
                 // Aqui es donde sacamos to_do lo que queremos del scanResult
-                WifiAP newAP = new WifiAP(scanResult.SSID, scanResult.BSSID, wifiAPLecture);
+                WifiAP newAP = new WifiAP(scanResult.SSID, scanResult.BSSID, lecture);
                 wifiApMatrix[scanningPosition].add(newAP);
             }
         }

@@ -10,8 +10,8 @@ public class WifiAPLectureComparator implements Comparator {
     @Override
     public int compare(Object o1, Object o2) {
 
-        WifiAPLecture lecture1 = (WifiAPLecture) o1;
-        WifiAPLecture lecture2 = (WifiAPLecture) o2;
+        Lecture lecture1 = (Lecture) o1;
+        Lecture lecture2 = (Lecture) o2;
 
 
 
@@ -21,9 +21,9 @@ public class WifiAPLectureComparator implements Comparator {
         // - if o2 > o1
 
         // Los he invertido porque lo quiero d emayor a menor
-        if (lecture1.getScanResult().level > lecture2.getScanResult().level) {
+        if (lecture1.getLevel() > lecture2.getLevel()) {
             return -1;
-        }else if(lecture1.getScanResult().level < lecture2.getScanResult().level) {
+        }else if(lecture1.getLevel() < lecture2.getLevel()) {
             return 1;
         }else {
             return 0;

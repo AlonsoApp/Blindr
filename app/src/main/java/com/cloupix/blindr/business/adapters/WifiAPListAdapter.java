@@ -1,7 +1,6 @@
-package com.cloupix.blindr.business;
+package com.cloupix.blindr.business.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.net.wifi.ScanResult;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cloupix.blindr.R;
+import com.cloupix.blindr.business.Lecture;
+import com.cloupix.blindr.business.WifiAPComparator;
+import com.cloupix.blindr.business.WifiAPView;
 import com.cloupix.blindr.logic.LineChartLogic;
 import com.github.mikephil.charting.charts.LineChart;
 
@@ -24,24 +26,24 @@ import java.util.List;
  */
 public class WifiAPListAdapter extends BaseAdapter {
 
-    private ArrayList<WifiAPRow> listWifiAPRow;
+    private ArrayList<WifiAPView> listWifiAPView;
     private LayoutInflater mInflater;
     private Context context;
 
     public WifiAPListAdapter(Context context) {
         this.context = context;
-        this.listWifiAPRow = new ArrayList<>();
+        this.listWifiAPView = new ArrayList<>();
         this.mInflater = LayoutInflater.from(context);
-        this.listWifiAPRow = new ArrayList<>();
+        this.listWifiAPView = new ArrayList<>();
     }
     @Override
     public int getCount() {
-        return listWifiAPRow.size();
+        return listWifiAPView.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return listWifiAPRow.get(position);
+        return listWifiAPView.get(position);
     }
 
     @Override
@@ -70,22 +72,22 @@ public class WifiAPListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        WifiAPRow wifiApRow = listWifiAPRow.get(position);
+        WifiAPView wifiApView = listWifiAPView.get(position);
 
-        holder.textViewSSID.setText(wifiApRow.getSSID());
-        holder.textViewBSSID.setText(wifiApRow.getBSSID());
-        holder.textViewApNumber.setText(Integer.toString(wifiApRow.getApNumber()));
-        holder.imgViewCircle.setImageResource(wifiApRow.getImgCircleRes());
+        holder.textViewSSID.setText(wifiApView.getSSID());
+        holder.textViewBSSID.setText(wifiApView.getBSSID());
+        holder.textViewApNumber.setText(Integer.toString(wifiApView.getApNumber()));
+        holder.imgViewCircle.setImageResource(wifiApView.getImgCircleRes());
 
-        ArrayList<WifiAPLecture> wifiAPLectures = wifiApRow.getLectures();
-        if(wifiAPLectures!=null && !wifiAPLectures.isEmpty()) {
-            WifiAPLecture lecture = wifiAPLectures.get(wifiAPLectures.size()-1);
-            holder.textViewRSSIValue.setText(lecture.getScanResult().level + "dB");
+        ArrayList<Lecture> lectures = wifiApView.getLectures();
+        if(lectures !=null && !lectures.isEmpty()) {
+            Lecture lecture = lectures.get(lectures.size()-1);
+            holder.textViewRSSIValue.setText(lecture.getLevel() + "dB");
 
 
             // Chart
             LineChartLogic lineChartLogic = new LineChartLogic();
-            lineChartLogic.setupChart(holder.lineChart, wifiApRow);
+            lineChartLogic.setupChart(holder.lineChart, wifiApView);
 
         }
         return convertView;
@@ -100,7 +102,7 @@ public class WifiAPListAdapter extends BaseAdapter {
     /*
     public void addWifiAP(WifiAP wifiAP) {
         boolean exists = false;
-        for (WifiAPRow cell : listWifiAPRow) {
+        for (WifiAPView cell : listWifiAPView) {
             // List.Cell.Mac = NewWifi.Mac
             if(cell.getMac().equals(wifiAP.getMac())){
                 cell.addWifiAPLectures(wifiAP.getLectures());
@@ -111,9 +113,9 @@ public class WifiAPListAdapter extends BaseAdapter {
         // Si no existía lo creamos y le asignamos yn numero y un color de circulo
         if(!exists) {
             // TODO Echar un opjo a esto a ver si da lo que tiene que dar
-            int circleRes = WifiAPRow.allCircleRes[listWifiAPRow.size() % WifiAPRow.allCircleRes.length];
-            WifiAPRow newCell = new WifiAPRow(wifiAP.getSsid(), wifiAP.getMac(), wifiAP.getLectures(), circleRes, listWifiAPRow.size()+1);
-            listWifiAPRow.add(newCell);
+            int circleRes = WifiAPView.allCircleNames[listWifiAPView.size() % WifiAPView.allCircleNames.length];
+            WifiAPView newCell = new WifiAPView(wifiAP.getSsid(), wifiAP.getMac(), wifiAP.getLectures(), circleRes, listWifiAPView.size()+1);
+            listWifiAPView.add(newCell);
         }
 
     }
@@ -124,16 +126,16 @@ public class WifiAPListAdapter extends BaseAdapter {
 
         for(ScanResult scanResult : scanResultList) {
             // Creamos el envelope
-            WifiAPLecture wifiAPLecture = new WifiAPLecture(scanResult);
+            Lecture lecture = new Lecture(scanResult);
 
 
             boolean exists = false;
-            for (WifiAPRow cell : listWifiAPRow) {
+            for (WifiAPView cell : listWifiAPView) {
                 // List.Cell.Mac = NewWifi.Mac
                 if(cell.getBSSID().equals(scanResult.BSSID)){
 
                     // Lo metemos en la lista de lecturas de la celda
-                    cell.addWifiAPLecture(wifiAPLecture);
+                    cell.addWifiAPLecture(lecture);
                     exists = true;
                     break;
                 }
@@ -141,21 +143,21 @@ public class WifiAPListAdapter extends BaseAdapter {
             // Si no existía lo creamos y le asignamos un numero y un color de circulo
             if(!exists) {
                 // TODO Echar un opjo a esto a ver si da lo que tiene que dar
-                int circleRes = WifiAPRow.allCircleRes[listWifiAPRow.size() % WifiAPRow.allCircleRes.length];
+                String circleName = WifiAPView.allCircleNames[listWifiAPView.size() % WifiAPView.allCircleNames.length];
                 // Aqui es donde sacamos todo lo que queremos del scanResult
-                WifiAPRow newRow = new WifiAPRow(scanResult.SSID, scanResult.BSSID, wifiAPLecture, circleRes, listWifiAPRow.size()+1);
-                listWifiAPRow.add(newRow);
+                WifiAPView newRow = new WifiAPView(scanResult.SSID, scanResult.BSSID, lecture, circleName, listWifiAPView.size()+1);
+                listWifiAPView.add(newRow);
             }
         }
 
 
         // Ordenamos la lista
-        Collections.sort(listWifiAPRow, new WifiAPComparator());
+        Collections.sort(listWifiAPView, new WifiAPComparator());
 
     }
 
     public String getBSSI(int position){
-        return listWifiAPRow.get(position).getBSSID();
+        return listWifiAPView.get(position).getBSSID();
     }
 
 }

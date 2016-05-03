@@ -7,15 +7,15 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/map_background">
 
-    <ProgressBar
-        android:id="@+id/scanProgressBar"
+    <EditText
+        android:id="@+id/editTextName"
         android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:visibility="invisible"
-        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"/>
+        android:layout_height="wrap_content"
+        android:hint="@string/map_name"/>
 
     <GridView
         android:id="@+id/gridview"
+        android:layout_below="@+id/editTextName"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"

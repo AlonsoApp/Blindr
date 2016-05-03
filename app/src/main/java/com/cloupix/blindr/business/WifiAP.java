@@ -1,9 +1,7 @@
 package com.cloupix.blindr.business;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -29,28 +27,28 @@ public class WifiAP {
      */
     private String BSSID;
 
-    private ArrayList<WifiAPLecture> lectures;
+    private ArrayList<Lecture> lectures;
 
     public WifiAP() {
-        this.lectures = new ArrayList<WifiAPLecture>();
+        this.lectures = new ArrayList<Lecture>();
     }
 
     public WifiAP(String SSID, String BSSID) {
         this.SSID = SSID;
         this.BSSID = BSSID;
-        this.lectures = new ArrayList<WifiAPLecture>();
+        this.lectures = new ArrayList<Lecture>();
     }
 
-    public WifiAP(String SSID, String BSSID, ArrayList<WifiAPLecture> lectures) {
+    public WifiAP(String SSID, String BSSID, ArrayList<Lecture> lectures) {
         this.SSID = SSID;
         this.BSSID = BSSID;
         this.lectures = lectures;
     }
 
-    public WifiAP(String SSID, String BSSID, final WifiAPLecture lecture) {
+    public WifiAP(String SSID, String BSSID, final Lecture lecture) {
         this.SSID = SSID;
         this.BSSID = BSSID;
-        this.lectures = new ArrayList<WifiAPLecture>(){{add(lecture);}};
+        this.lectures = new ArrayList<Lecture>(){{add(lecture);}};
     }
 
     public String getSSID() {
@@ -61,7 +59,7 @@ public class WifiAP {
         return BSSID;
     }
 
-    public ArrayList<WifiAPLecture> getLectures() {
+    public ArrayList<Lecture> getLectures() {
         return lectures;
     }
 
@@ -73,22 +71,22 @@ public class WifiAP {
         this.BSSID = BSSID;
     }
 
-    public void setLectures(ArrayList<WifiAPLecture> lectures) {
+    public void setLectures(ArrayList<Lecture> lectures) {
         this.lectures = lectures;
     }
 
-    public void addWifiAPLecture(WifiAPLecture lecture) {
+    public void addWifiAPLecture(Lecture lecture) {
         lectures.add(lecture);
     }
 
-    public void addWifiAPLectures(ArrayList<WifiAPLecture> lectures) {
+    public void addWifiAPLectures(ArrayList<Lecture> lectures) {
         lectures.addAll(lectures);
     }
 
     public int getAverageRSSI(){
         int[] levels = new int[lectures.size()];
         for (int i = 0; i<lectures.size(); i++){
-            levels[i] = lectures.get(i).getScanResult().level;
+            levels[i] = lectures.get(i).getLevel();
         }
         // Si queremos quitar los valores más bajos y más altos de la media tendríamos que ordenar y
         // podar el array aqui
@@ -105,11 +103,11 @@ public class WifiAP {
         // Ordenamos la lista
         //Collections.sort(lectures, new WifiAPLectureComparator());
 
-        for (WifiAPLecture lecture : lectures) {
-            if (map.containsKey(lecture.getScanResult().level)) {
-                map.put(lecture.getScanResult().level, map.get(lecture.getScanResult().level)+1);
+        for (Lecture lecture : lectures) {
+            if (map.containsKey(lecture.getLevel())) {
+                map.put(lecture.getLevel(), map.get(lecture.getLevel())+1);
             }else{
-                map.put(lecture.getScanResult().level, 1);
+                map.put(lecture.getLevel(), 1);
             }
         }
 

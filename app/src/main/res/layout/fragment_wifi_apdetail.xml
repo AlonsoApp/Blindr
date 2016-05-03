@@ -8,7 +8,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/map_background"><!--
     tools:context=".ui.fragments.WifiAPDetailFragment"
-    tools:showIn="@layout/activity_wifi_apdetail">-->
+    tools:showIn="@layout/activity_fingerprinting">-->
 
 
     <TextView

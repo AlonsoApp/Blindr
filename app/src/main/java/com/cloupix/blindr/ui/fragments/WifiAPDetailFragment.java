@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.cloupix.blindr.R;
 import com.cloupix.blindr.business.WifiAP;
-import com.cloupix.blindr.business.WifiAPLecture;
+import com.cloupix.blindr.business.Lecture;
 import com.cloupix.blindr.logic.BarChartLogic;
 import com.cloupix.blindr.logic.LineChartLogic;
 import com.cloupix.blindr.logic.WifiLogic;
@@ -104,10 +104,10 @@ public class WifiAPDetailFragment extends Fragment implements WifiLogic.WifiLogi
             if(detailedWifiAP.getBSSID().equals(scanResult.BSSID)){
 
 
-                WifiAPLecture wifiAPLecture = new WifiAPLecture(scanResult);
+                Lecture lecture = new Lecture(scanResult);
 
                 // Lo metemos en la lista de lecturas de la celda
-                detailedWifiAP.addWifiAPLecture(wifiAPLecture);
+                detailedWifiAP.addWifiAPLecture(lecture);
 
                 if(TextUtils.isEmpty(detailedWifiAP.getSSID()))
                     detailedWifiAP.setSSID(scanResult.SSID);
@@ -119,7 +119,7 @@ public class WifiAPDetailFragment extends Fragment implements WifiLogic.WifiLogi
     private void updateUI(){
         textViewSSID.setText(detailedWifiAP.getSSID());
         textViewBSSID.setText(detailedWifiAP.getBSSID());
-        textViewRSSI.setText(detailedWifiAP.getLectures().get(detailedWifiAP.getLectures().size()-1).getScanResult().level + "dB");
+        textViewRSSI.setText(detailedWifiAP.getLectures().get(detailedWifiAP.getLectures().size()-1).getLevel() + "dB");
         textViewAverageRSSI.setText(detailedWifiAP.getAverageRSSI() + "dB");
 
         if(lineChartLogic==null){

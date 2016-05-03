@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp">
+
+
+    <com.cloupix.blindr.business.SquareImageView
+        android:id="@+id/imgViewSector"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"/>
+
+    <View
+        android:id="@+id/nStroke"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:background="@color/wall_off"
+        android:layout_alignParentTop="true"
+        android:clickable="true"/>
+
+    <View
+        android:id="@+id/eStroke"
+        android:layout_width="25dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        android:layout_height="match_parent"
+        android:background="@color/wall_off"
+        android:layout_alignParentEnd="true"
+        android:clickable="true"/>
+
+
+    <View
+        android:id="@+id/sStroke"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:background="@color/wall_off"
+        android:layout_alignParentBottom="true"
+        android:clickable="true"/>
+
+    <View
+        android:id="@+id/wStroke"
+        android:layout_width="25dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        android:layout_height="match_parent"
+        android:background="@color/wall_off"
+        android:layout_alignParentStart="true"
+        android:clickable="true"/>
+
+    <View
+        android:id="@+id/neswStroke"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:rotation="-45"
+        android:background="@color/wall_off"
+        android:layout_centerInParent="true"
+        android:clickable="true"/>
+    <View
+        android:id="@+id/nwseStroke"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:rotation="45"
+        android:background="@color/wall_off"
+        android:layout_centerInParent="true"
+        android:clickable="true"/>
+
+    <ImageView
+        android:id="@+id/imgViewCircle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="25dp"
+        android:padding="25dp"
+        android:layout_centerHorizontal="true"
+        android:src="@mipmap/purple_circle"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:id="@+id/textViewApNumber"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="25dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/white"
+        android:textSize="22sp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        android:text="1"/>
+
+</RelativeLayout>
