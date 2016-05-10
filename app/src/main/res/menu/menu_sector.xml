@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.activities.MainActivity">
     <item
-        android:id="@+id/action_fingerprinting"
-        android:title="@string/action_fingerprinting"
-        android:icon="@mipmap/ic_fingerprint_white_48dp"
+        android:id="@+id/action_save"
+        android:title="@string/action_save"
         app:showAsAction="ifRoom" />
 </menu>

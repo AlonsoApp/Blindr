@@ -1,4 +1,6 @@
-package com.cloupix.blindr.business;
+package com.cloupix.blindr.business.comparators;
+
+import com.cloupix.blindr.business.WifiAP;
 
 import java.util.Comparator;
 

@@ -3,6 +3,7 @@ package com.cloupix.blindr.ui.activities;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -64,8 +65,9 @@ public class MainActivity extends AppCompatActivity implements WifiListFragment.
 
         //noinspection SimplifiableIfStatement
         switch (id){
-            case R.id.action_settings:
-
+            case R.id.action_fingerprinting:
+                Intent intent = new Intent(this, FingerprintingActivity.class);
+                startActivity(intent);
                 return true;
             // case R.id.finger:
 
@@ -144,11 +146,10 @@ public class MainActivity extends AppCompatActivity implements WifiListFragment.
 
         if (!fragmentPopped && manager.findFragmentByTag(fragmentTag) == null){
             //fragment not in back stack, create it.
-            if(args!=null)
-                fragment.setArguments(args);
+            fragment.setArguments(args);
             FragmentTransaction ft = manager.beginTransaction();
             ft.replace(R.id.fragment_container, fragment, fragmentTag);
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             ft.addToBackStack(backStateName);
             ft.commit();
         }
@@ -169,7 +170,8 @@ public class MainActivity extends AppCompatActivity implements WifiListFragment.
             finish();
         }
         else {
-            super.onBackPressed();
+            getFragmentManager().popBackStack();
+            //super.onBackPressed();
         }
     }
 }

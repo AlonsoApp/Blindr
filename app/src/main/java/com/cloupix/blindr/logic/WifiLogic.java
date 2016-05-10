@@ -72,7 +72,11 @@ public class WifiLogic {
     }
 
     public void stopScan(){
-        context.unregisterReceiver(br);
+        try{
+            context.unregisterReceiver(br);
+        }catch (IllegalArgumentException e){
+
+        }
     }
 
 

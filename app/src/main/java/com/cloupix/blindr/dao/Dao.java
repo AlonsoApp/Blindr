@@ -49,12 +49,17 @@ public class Dao {
 
     //<editor-fold desc="Internal classes">
 
-    public class WifiAPSector{
+    public static class WifiAPSector{
         private long wifiAPSectorId;
         private String BSSID;
         private long sectorId;
 
         public WifiAPSector() {
+        }
+
+        public WifiAPSector(String BSSID, long sectorId) {
+            this.BSSID = BSSID;
+            this.sectorId = sectorId;
         }
 
         public WifiAPSector(long wifiAPSectorId, String BSSID, long sectorId) {
@@ -153,15 +158,15 @@ public class Dao {
                 SQLiteDatabase.CONFLICT_REPLACE);
     }
 
-    public long insertWifiAPView(WifiAPView wifiAPView){
+    public long insertWifiAPView(WifiAPView wifiAPView, long wifiAPSectorId){
         if(database==null)
             return -1;
 
         //  Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(BlindrDbContract.WifiAPView.COLUMN_NAME_BACKGROUND_IMAGE, wifiAPView.getBackgroundImage());
+        values.put(BlindrDbContract.WifiAPView.COLUMN_NAME_BACKGROUND_CIRCLE, wifiAPView.getBackgroundCircle());
         values.put(BlindrDbContract.WifiAPView.COLUMN_NAME_AP_NUMBER, wifiAPView.getApNumber());
-        values.put(BlindrDbContract.WifiAPView.COLUMN_NAME_BSSID, wifiAPView.getBSSID());
+        values.put(BlindrDbContract.WifiAPView.COLUMN_NAME_WIFI_AP_SECTOR_ID, wifiAPSectorId);
 
         return database.insertWithOnConflict(BlindrDbContract.WifiAPView.TABLE_NAME, null, values,
                 SQLiteDatabase.CONFLICT_REPLACE);
@@ -173,12 +178,12 @@ public class Dao {
 
         //  Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_N, sectorView.getStroke()[com.cloupix.blindr.business.SectorView.STROKE_N]);
-        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_E, sectorView.getStroke()[com.cloupix.blindr.business.SectorView.STROKE_E]);
-        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_S, sectorView.getStroke()[com.cloupix.blindr.business.SectorView.STROKE_S]);
-        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_W, sectorView.getStroke()[com.cloupix.blindr.business.SectorView.STROKE_W]);
-        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_NW_SE, sectorView.getStroke()[com.cloupix.blindr.business.SectorView.STROKE_NW_SE]);
-        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_NE_SW, sectorView.getStroke()[com.cloupix.blindr.business.SectorView.STROKE_NE_SW]);
+        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_N, sectorView.isnStroke());
+        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_E, sectorView.iseStroke());
+        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_S, sectorView.issStroke());
+        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_W, sectorView.iswStroke());
+        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_NW_SE, sectorView.isNwseStroke());
+        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_NE_SW, sectorView.isNeswStroke());
         values.put(BlindrDbContract.SectorView.COLUMN_NAME_SCANNED, sectorView.isScanned());
         values.put(BlindrDbContract.SectorView.COLUMN_NAME_SECTOR_ID, sectorView.getSectorId());
 
@@ -202,6 +207,36 @@ public class Dao {
     //</editor-fold>
 
     //<editor-fold desc="Queries">
+
+    public ArrayList<Map> getMaps(){
+        if(database==null)
+            return null;
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                BlindrDbContract.Map.COLUMN_NAME_MAP_ID,
+                BlindrDbContract.Map.COLUMN_NAME_NAME,
+                BlindrDbContract.Map.COLUMN_NAME_HEIGHT,
+                BlindrDbContract.Map.COLUMN_NAME_WIDTH
+        };
+        // How you want the results sorted in the resulting Cursor
+        //String sortOrder = FeedEntry.COLUMN_NAME_UPDATED + " DESC";
+
+        Cursor c = database.query(
+                BlindrDbContract.Map.TABLE_NAME,       // The table to query
+                projection,                               // The columns to return
+                null,                                // The columns for the WHERE clause
+                null,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+
+        ArrayList<Map> list = cursorToMapList(c);
+        c.close();
+        return list;
+    }
 
     public Map getMapById(long mapId) {
         if(database==null)
@@ -473,9 +508,9 @@ public class Dao {
         // you will actually use after this query.
         String[] projection = {
                 BlindrDbContract.WifiAPView.COLUMN_NAME_WIFI_AP_VIEW_ID,
-                BlindrDbContract.WifiAPView.COLUMN_NAME_BACKGROUND_IMAGE,
+                BlindrDbContract.WifiAPView.COLUMN_NAME_BACKGROUND_CIRCLE,
                 BlindrDbContract.WifiAPView.COLUMN_NAME_AP_NUMBER,
-                BlindrDbContract.WifiAPView.COLUMN_NAME_BSSID
+                BlindrDbContract.WifiAPView.COLUMN_NAME_WIFI_AP_SECTOR_ID
         };
 
         // A filter declaring which rows to return, formatted as an SQL WHERE clause
@@ -507,7 +542,7 @@ public class Dao {
         return wifiAPView;
     }
 
-    public WifiAPView getWifiAPViewByBSSID(String bssid) {
+    public WifiAPView getWifiAPViewByWifiAPSectorId(long wifiAPSectorId) {
         if(database==null)
             return null;
 
@@ -515,20 +550,20 @@ public class Dao {
         // you will actually use after this query.
         String[] projection = {
                 BlindrDbContract.WifiAPView.COLUMN_NAME_WIFI_AP_VIEW_ID,
-                BlindrDbContract.WifiAPView.COLUMN_NAME_BACKGROUND_IMAGE,
+                BlindrDbContract.WifiAPView.COLUMN_NAME_BACKGROUND_CIRCLE,
                 BlindrDbContract.WifiAPView.COLUMN_NAME_AP_NUMBER,
-                BlindrDbContract.WifiAPView.COLUMN_NAME_BSSID
+                BlindrDbContract.WifiAPView.COLUMN_NAME_WIFI_AP_SECTOR_ID
         };
 
         // A filter declaring which rows to return, formatted as an SQL WHERE clause
         // (excluding the WHERE itself). Passing null will return all rows for the given table.
         String selection =
-                BlindrDbContract.WifiAPView.COLUMN_NAME_BSSID + "=?";
+                BlindrDbContract.WifiAPView.COLUMN_NAME_WIFI_AP_SECTOR_ID + "=?";
 
         // You may include ?s in selection, which will be replaced by the values from selectionArgs,
         // in order that they appear in the selection. The values will be bound as Strings.
         String[] selectionArgs = new String[]{
-                bssid
+                Long.toString(wifiAPSectorId)
         };
 
         // How you want the results sorted in the resulting Cursor
@@ -801,19 +836,53 @@ public class Dao {
         );
     }
 
-    public void updateSectorView(com.cloupix.blindr.business.SectorView sectorView) {
+    public void updateSector(Sector sector) {
+
+        if(database==null)
+            return;
+
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(BlindrDbContract.Sector.COLUMN_NAME_LIST_N, sector.getListN());
+        values.put(BlindrDbContract.Sector.COLUMN_NAME_MATRIX_X, sector.getMatrixX());
+        values.put(BlindrDbContract.Sector.COLUMN_NAME_MATRIX_Y, sector.getMatrixY());
+        values.put(BlindrDbContract.Sector.COLUMN_NAME_LATITUDE, sector.getLatitude());
+        values.put(BlindrDbContract.Sector.COLUMN_NAME_LONGITUDE, sector.getLongitude());
+
+        // A filter declaring which rows to return, formatted as an SQL WHERE clause
+        // (excluding the WHERE itself). Passing null will return all rows for the given table.
+        String selection =
+                BlindrDbContract.Sector.COLUMN_NAME_SECTOR_ID + "=?";
+
+        // You may include ?s in selection, which will be replaced by the values from selectionArgs,
+        // in order that they appear in the selection. The values will be bound as Strings.
+        String[] selectionArgs = new String[]{
+                Long.toString(sector.getSectorId())
+        };
+
+        // Insert the new row, returning the primary key value of the new row
+        database.update(
+                BlindrDbContract.Sector.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs
+        );
+    }
+
+    public void updateSectorView(SectorView sectorView) {
 
         if(database==null)
             return;
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_N, sectorView.getStroke(com.cloupix.blindr.business.SectorView.STROKE_N) ? 1 : 0);
-        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_E, sectorView.getStroke(com.cloupix.blindr.business.SectorView.STROKE_E) ? 1 : 0);
-        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_S, sectorView.getStroke(com.cloupix.blindr.business.SectorView.STROKE_S) ? 1 : 0);
-        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_W, sectorView.getStroke(com.cloupix.blindr.business.SectorView.STROKE_W) ? 1 : 0);
-        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_NW_SE, sectorView.getStroke(com.cloupix.blindr.business.SectorView.STROKE_NW_SE) ? 1 : 0);
-        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_NW_SE, sectorView.getStroke(com.cloupix.blindr.business.SectorView.STROKE_NW_SE) ? 1 : 0);
+        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_N, sectorView.isnStroke() ? 1 : 0);
+        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_E, sectorView.iseStroke() ? 1 : 0);
+        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_S, sectorView.issStroke() ? 1 : 0);
+        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_W, sectorView.iswStroke() ? 1 : 0);
+        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_NW_SE, sectorView.isNwseStroke() ? 1 : 0);
+        values.put(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_NE_SW, sectorView.isNeswStroke() ? 1 : 0);
         values.put(BlindrDbContract.SectorView.COLUMN_NAME_SCANNED, sectorView.isScanned() ? 1 : 0);
 
         // A filter declaring which rows to return, formatted as an SQL WHERE clause
@@ -1247,12 +1316,10 @@ public class Dao {
 
         wifiAPView.setWifiAPViewId(cursor.getLong(
                 cursor.getColumnIndexOrThrow(BlindrDbContract.WifiAPView.COLUMN_NAME_WIFI_AP_VIEW_ID)));
-        wifiAPView.setBackgroundImage(cursor.getString(
-                cursor.getColumnIndexOrThrow(BlindrDbContract.WifiAPView.COLUMN_NAME_BACKGROUND_IMAGE)));
+        wifiAPView.setBackgroundCircle(cursor.getInt(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.WifiAPView.COLUMN_NAME_BACKGROUND_CIRCLE)));
         wifiAPView.setApNumber(cursor.getInt(
                 cursor.getColumnIndexOrThrow(BlindrDbContract.WifiAPView.COLUMN_NAME_AP_NUMBER)));
-        wifiAPView.setBSSID(cursor.getString(
-                cursor.getColumnIndexOrThrow(BlindrDbContract.WifiAPView.COLUMN_NAME_BSSID)));
 
         return wifiAPView;
     }
@@ -1267,18 +1334,18 @@ public class Dao {
 
         sectorView.setSectorViewId(cursor.getLong(
                 cursor.getColumnIndexOrThrow(BlindrDbContract.SectorView.COLUMN_NAME_SECTOR_VIEW_ID)));
-        sectorView.setStroke(com.cloupix.blindr.business.SectorView.STROKE_N, cursor.getInt(
-                cursor.getColumnIndexOrThrow(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_N)));
-        sectorView.setStroke(com.cloupix.blindr.business.SectorView.STROKE_E, cursor.getInt(
-                cursor.getColumnIndexOrThrow(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_E)));
-        sectorView.setStroke(com.cloupix.blindr.business.SectorView.STROKE_S, cursor.getInt(
-                cursor.getColumnIndexOrThrow(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_S)));
-        sectorView.setStroke(com.cloupix.blindr.business.SectorView.STROKE_W, cursor.getInt(
-                cursor.getColumnIndexOrThrow(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_W)));
-        sectorView.setStroke(com.cloupix.blindr.business.SectorView.STROKE_NW_SE, cursor.getInt(
-                cursor.getColumnIndexOrThrow(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_NW_SE)));
-        sectorView.setStroke(com.cloupix.blindr.business.SectorView.STROKE_NE_SW, cursor.getInt(
-                cursor.getColumnIndexOrThrow(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_NE_SW)));
+        sectorView.setnStroke(cursor.getInt(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_N))>0);
+        sectorView.seteStroke(cursor.getInt(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_E))>0);
+        sectorView.setsStroke(cursor.getInt(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_S))>0);
+        sectorView.setwStroke(cursor.getInt(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_W))>0);
+        sectorView.setNeswStroke(cursor.getInt(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_NE_SW))>0);
+        sectorView.setNwseStroke(cursor.getInt(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.SectorView.COLUMN_NAME_STROKE_NW_SE))>0);
         sectorView.setScanned(cursor.getInt(
                 cursor.getColumnIndexOrThrow(BlindrDbContract.SectorView.COLUMN_NAME_SCANNED)));
         sectorView.setSectorId(cursor.getLong(

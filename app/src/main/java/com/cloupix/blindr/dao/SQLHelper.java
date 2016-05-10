@@ -12,7 +12,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "blindr.db";
 
 
@@ -26,8 +26,8 @@ public class SQLHelper extends SQLiteOpenHelper {
         db.execSQL(BlindrDbContract.SQL_CREATE_TABLE_SECTOR);
         db.execSQL(BlindrDbContract.SQL_CREATE_TABLE_SECTOR_VIEW);
         db.execSQL(BlindrDbContract.SQL_CREATE_TABLE_LECTURE);
-        db.execSQL(BlindrDbContract.SQL_CREATE_TABLE_WIFI_AP_VIEW);
         db.execSQL(BlindrDbContract.SQL_CREATE_TABLE_WIFI_AP_SECTOR);
+        db.execSQL(BlindrDbContract.SQL_CREATE_TABLE_WIFI_AP_VIEW);
     }
 
     @Override

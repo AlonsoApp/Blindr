@@ -16,6 +16,11 @@
     <color name="circle_blue">#5067c1</color>
     <color name="circle_grey">#607D8B</color>
     <color name="circle_pink">#E91E63</color>
-    <color name="wall_on">#282828</color>
+    <color name="wall_on">#3f51b5</color> <!-- 3f3f3f -->
     <color name="wall_off">#cbcbcb</color>
+    <color name="scanned">#c0dfc3</color>
+    <color name="location_red">#e53935</color>
+    <color name="location_orange">#F9A825</color>
+    <color name="location_yellow">#FFEB3B</color>
+    <color name="location_cream">#FFF9C4</color>
 </resources>

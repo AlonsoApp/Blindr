@@ -50,9 +50,13 @@ public class NewMapDialog extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 String name = editTextName.getText().toString();
                 name = TextUtils.isEmpty(name)?getString(R.string.untitled_map):name;
+                String strHeight = editTextHeight.getText().toString();
+                String strWidth = editTextWidth.getText().toString();
+                if(TextUtils.isEmpty(strHeight) || TextUtils.isEmpty(strWidth))
+                    return;
                 int height = Integer.parseInt(editTextHeight.getText().toString());
                 int width = Integer.parseInt(editTextWidth.getText().toString());
-                // TODO mirar a evr que sale cuando el texto esta vacío y poner una contramedida cuando pase eso
+
 
                 MapLogic mapLogic = new MapLogic();
                 long mapId = mapLogic.createMap(name, height, width, getContext());

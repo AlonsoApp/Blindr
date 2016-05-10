@@ -41,15 +41,31 @@ public class EditSectorPagerAdapter extends FragmentPagerAdapter {
 
     public void setSectorView(SectorView sectorView){
         this.sectorView = sectorView;
+        EditSectorViewWallsFragment wallsFragment = (EditSectorViewWallsFragment) aFragments[FRAGMENT_WALLS];
+        wallsFragment.setSectorView(sectorView);
+        EditSectorViewWifiAPsFragment wifiFragment = (EditSectorViewWifiAPsFragment) aFragments[FRAGMENT_WIFI_APS];
+        wifiFragment.setSectorView(sectorView);
     }
 
     public void notifySectorViewChanged(){
         EditSectorViewWallsFragment wallsFragment = (EditSectorViewWallsFragment) aFragments[FRAGMENT_WALLS];
         wallsFragment.setSectorView(sectorView);
-        wallsFragment.notifySectorViewChanged();
+        //wallsFragment.notifySectorViewChanged();
 
         EditSectorViewWifiAPsFragment wifiFragment = (EditSectorViewWifiAPsFragment) aFragments[FRAGMENT_WIFI_APS];
         wifiFragment.setSectorView(sectorView);
-        wifiFragment.notifySectorViewChanged();
+        //wifiFragment.notifySectorViewChanged();
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        switch (position) {
+            case 0:
+                return "Walls";
+            case 1:
+                return "WiFi Access Points";
+        }
+
+        return null;
     }
 }

@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.cloupix.blindr.R;
 import com.cloupix.blindr.business.Lecture;
-import com.cloupix.blindr.business.WifiAPComparator;
+import com.cloupix.blindr.business.comparators.WifiAPComparator;
 import com.cloupix.blindr.business.WifiAPView;
 import com.cloupix.blindr.logic.LineChartLogic;
 import com.github.mikephil.charting.charts.LineChart;
@@ -34,7 +34,6 @@ public class WifiAPListAdapter extends BaseAdapter {
         this.context = context;
         this.listWifiAPView = new ArrayList<>();
         this.mInflater = LayoutInflater.from(context);
-        this.listWifiAPView = new ArrayList<>();
     }
     @Override
     public int getCount() {
@@ -77,7 +76,7 @@ public class WifiAPListAdapter extends BaseAdapter {
         holder.textViewSSID.setText(wifiApView.getSSID());
         holder.textViewBSSID.setText(wifiApView.getBSSID());
         holder.textViewApNumber.setText(Integer.toString(wifiApView.getApNumber()));
-        holder.imgViewCircle.setImageResource(wifiApView.getImgCircleRes());
+        holder.imgViewCircle.setImageResource(wifiApView.getBackgroundCircleRes());
 
         ArrayList<Lecture> lectures = wifiApView.getLectures();
         if(lectures !=null && !lectures.isEmpty()) {
@@ -143,9 +142,9 @@ public class WifiAPListAdapter extends BaseAdapter {
             // Si no existía lo creamos y le asignamos un numero y un color de circulo
             if(!exists) {
                 // TODO Echar un opjo a esto a ver si da lo que tiene que dar
-                String circleName = WifiAPView.allCircleNames[listWifiAPView.size() % WifiAPView.allCircleNames.length];
+                int backgroundCircle = listWifiAPView.size() - (WifiAPView.allCircleResources.length*(listWifiAPView.size() / WifiAPView.allCircleResources.length));
                 // Aqui es donde sacamos todo lo que queremos del scanResult
-                WifiAPView newRow = new WifiAPView(scanResult.SSID, scanResult.BSSID, lecture, circleName, listWifiAPView.size()+1);
+                WifiAPView newRow = new WifiAPView(scanResult.SSID, scanResult.BSSID, lecture, backgroundCircle, listWifiAPView.size()+1);
                 listWifiAPView.add(newRow);
             }
         }

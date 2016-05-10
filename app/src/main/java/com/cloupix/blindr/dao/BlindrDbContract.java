@@ -38,7 +38,7 @@ public class BlindrDbContract {
 
     public static abstract class SectorView implements BaseColumns {
 
-        public static final String TABLE_NAME = "sector_cell";
+        public static final String TABLE_NAME = "sector_view";
         public static final String COLUMN_NAME_SECTOR_VIEW_ID = "sector_view_id";
         public static final String COLUMN_NAME_STROKE_N = "stroke_n";
         public static final String COLUMN_NAME_STROKE_E = "stroke_e";
@@ -69,21 +69,21 @@ public class BlindrDbContract {
         public static final String COLUMN_NAME_SSID = "ssid";
     }
 
-    public static abstract class WifiAPView implements BaseColumns {
-
-        public static final String TABLE_NAME = "wifi_ap_view";
-        public static final String COLUMN_NAME_WIFI_AP_VIEW_ID = "wifi_ap_view_id";
-        public static final String COLUMN_NAME_BACKGROUND_IMAGE = "background_image";
-        public static final String COLUMN_NAME_AP_NUMBER = "ap_number";
-        public static final String COLUMN_NAME_BSSID = "bssid";
-    }
-
     public static abstract class WifiAPSector implements BaseColumns {
 
         public static final String TABLE_NAME = "wifi_ap_sector";
         public static final String COLUMN_NAME_WIFI_AP_SECTOR_ID = "wifi_ap_sector_id";
         public static final String COLUMN_NAME_BSSID = "bssid";
         public static final String COLUMN_NAME_SECTOR_ID = "sector_id";
+    }
+
+    public static abstract class WifiAPView implements BaseColumns {
+
+        public static final String TABLE_NAME = "wifi_ap_view";
+        public static final String COLUMN_NAME_WIFI_AP_VIEW_ID = "wifi_ap_view_id";
+        public static final String COLUMN_NAME_BACKGROUND_CIRCLE = "background_circle";
+        public static final String COLUMN_NAME_AP_NUMBER = "ap_number";
+        public static final String COLUMN_NAME_WIFI_AP_SECTOR_ID = "wifi_ap_sector_id";
     }
 
     //</editor-fold>
@@ -127,6 +127,7 @@ public class BlindrDbContract {
                     SectorView.COLUMN_NAME_STROKE_W + INTEGER_TYPE + COMMA_SEP +
                     SectorView.COLUMN_NAME_STROKE_NW_SE + INTEGER_TYPE + COMMA_SEP +
                     SectorView.COLUMN_NAME_STROKE_NE_SW + INTEGER_TYPE + COMMA_SEP +
+                    SectorView.COLUMN_NAME_SCANNED + INTEGER_TYPE + COMMA_SEP +
                     SectorView.COLUMN_NAME_SECTOR_ID + INTEGER_TYPE + COMMA_SEP +
                     " FOREIGN KEY ("+ SectorView.COLUMN_NAME_SECTOR_ID+")" +
                     " REFERENCES "+ Sector.TABLE_NAME+" ("+ Sector.COLUMN_NAME_SECTOR_ID+") ON DELETE CASCADE" +
@@ -151,16 +152,16 @@ public class BlindrDbContract {
             "CREATE TABLE " + WifiAP.TABLE_NAME + " (" +
                     WifiAP.COLUMN_NAME_BSSID + TEXT_TYPE + " PRIMARY KEY " + COMMA_SEP +
                     WifiAP.COLUMN_NAME_SSID + TEXT_TYPE + COMMA_SEP +
-                    " UNIQUE (" + Lecture.COLUMN_NAME_LECTURE_ID + ") ON CONFLICT REPLACE" +
+                    " UNIQUE (" + WifiAP.COLUMN_NAME_BSSID + ") ON CONFLICT REPLACE" +
                     " );";
     public static final String SQL_CREATE_TABLE_WIFI_AP_VIEW =
             "CREATE TABLE " + WifiAPView.TABLE_NAME + " (" +
                     WifiAPView.COLUMN_NAME_WIFI_AP_VIEW_ID + INTEGER_TYPE + " PRIMARY KEY AUTOINCREMENT" + COMMA_SEP +
-                    WifiAPView.COLUMN_NAME_BACKGROUND_IMAGE + TEXT_TYPE + COMMA_SEP +
+                    WifiAPView.COLUMN_NAME_BACKGROUND_CIRCLE + INTEGER_TYPE + COMMA_SEP +
                     WifiAPView.COLUMN_NAME_AP_NUMBER + INTEGER_TYPE + COMMA_SEP +
-                    WifiAPView.COLUMN_NAME_BSSID + TEXT_TYPE + COMMA_SEP +
-                    " FOREIGN KEY ("+ WifiAPView.COLUMN_NAME_BSSID+")" +
-                    " REFERENCES "+ WifiAP.TABLE_NAME+" ("+ WifiAP.COLUMN_NAME_BSSID+") ON DELETE CASCADE" +
+                    WifiAPView.COLUMN_NAME_WIFI_AP_SECTOR_ID + INTEGER_TYPE + COMMA_SEP +
+                    " FOREIGN KEY ("+ WifiAPView.COLUMN_NAME_WIFI_AP_SECTOR_ID+")" +
+                    " REFERENCES "+ WifiAPSector.TABLE_NAME+" ("+ WifiAPSector.COLUMN_NAME_WIFI_AP_SECTOR_ID+") ON DELETE CASCADE" +
                     " UNIQUE (" + WifiAPView.COLUMN_NAME_WIFI_AP_VIEW_ID + ") ON CONFLICT REPLACE" +
                     " );";
     public static final String SQL_CREATE_TABLE_WIFI_AP_SECTOR =

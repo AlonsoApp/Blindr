@@ -1,6 +1,7 @@
 package com.cloupix.blindr.business;
 
 import android.graphics.drawable.Drawable;
+import android.os.Parcel;
 
 import com.cloupix.blindr.R;
 
@@ -14,47 +15,47 @@ import java.util.ArrayList;
 // This is a git example
 public class WifiAPView extends WifiAP {
 
-    public static final String[] allCircleNames = new String[]{
-            "purple_circle",
-            "green_circle",
-            "red_circle",
-            "amber_circle",
-            "indigo_circle",
-            "pink_circle",
+    public static final int[] allCircleResources = new int[]{
+            R.mipmap.purple_circle,
+            R.mipmap.green_circle,
+            R.mipmap.red_circle,
+            R.mipmap.amber_circle,
+            R.mipmap.indigo_circle,
+            R.mipmap.pink_circle
     };
 
     public static final int multipleAPCircleRes = R.mipmap.grey_circle;
 
     private long wifiAPViewId;
-    private String backgroundImage;
+    private int backgroundCircle;
     private int apNumber;
 
     public WifiAPView() {
-        backgroundImage = "purple_circle";
+        backgroundCircle = 0;
         apNumber = 1;
     }
 
-    public WifiAPView(String ssid, String BSSID, String backgroundImage, int apNumber) {
+    public WifiAPView(String ssid, String BSSID, int backgroundCircle, int apNumber) {
         super(ssid, BSSID);
-        this.backgroundImage = backgroundImage;
+        this.backgroundCircle = backgroundCircle;
         this.apNumber = apNumber;
     }
 
-    public WifiAPView(String ssid, String BSSID, ArrayList<Lecture> lectures, String backgroundImage, int apNumber) {
+    public WifiAPView(String ssid, String BSSID, ArrayList<Lecture> lectures, int backgroundCircle, int apNumber) {
         super(ssid, BSSID, lectures);
-        this.backgroundImage = backgroundImage;
+        this.backgroundCircle = backgroundCircle;
         this.apNumber = apNumber;
     }
 
 
-    public WifiAPView(String ssid, String BSSID, Lecture lecture, String backgroundImage, int apNumber) {
+    public WifiAPView(String ssid, String BSSID, Lecture lecture, int backgroundCircle, int apNumber) {
         super(ssid, BSSID, lecture);
-        this.backgroundImage = backgroundImage;
+        this.backgroundCircle = backgroundCircle;
         this.apNumber = apNumber;
     }
 
-    public int getImgCircleRes() {
-        return getResId(this.backgroundImage, Drawable.class);
+    public int getBackgroundCircleRes() {
+        return allCircleResources[backgroundCircle];
     }
 
     public int getApNumber() {
@@ -65,29 +66,18 @@ public class WifiAPView extends WifiAP {
         this.apNumber = apNumber;
     }
 
-    public String getBackgroundImage() {
-        return backgroundImage;
+    public int getBackgroundCircle() {
+        return backgroundCircle;
     }
 
-    public void setBackgroundImage(String backgroundImage) {
-        this.backgroundImage = backgroundImage;
+    public void setBackgroundCircle(int backgroundCircle) {
+        this.backgroundCircle = backgroundCircle;
     }
 
     public void mergeWifiAP(WifiAP wifiAP) {
         super.setSSID(wifiAP.getSSID());
         super.setBSSID(wifiAP.getBSSID());
         super.setLectures(wifiAP.getLectures());
-    }
-
-    public static int getResId(String resName, Class<?> c) {
-
-        try {
-            Field idField = c.getDeclaredField(resName);
-            return idField.getInt(idField);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1;
-        }
     }
 
     public long getWifiAPViewId() {
@@ -97,4 +87,37 @@ public class WifiAPView extends WifiAP {
     public void setWifiAPViewId(long wifiAPViewId) {
         this.wifiAPViewId = wifiAPViewId;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeLong(wifiAPViewId);
+        dest.writeInt(backgroundCircle);
+        dest.writeInt(apNumber);
+    }
+
+    protected WifiAPView(Parcel in) {
+        super(in);
+        wifiAPViewId = in.readLong();
+        backgroundCircle = in.readInt();
+        apNumber = in.readInt();
+    }
+
+    public static final Creator<WifiAPView> CREATOR = new Creator<WifiAPView>() {
+        @Override
+        public WifiAPView createFromParcel(Parcel in) {
+            return new WifiAPView(in);
+        }
+
+        @Override
+        public WifiAPView[] newArray(int size) {
+            return new WifiAPView[size];
+        }
+    };
 }

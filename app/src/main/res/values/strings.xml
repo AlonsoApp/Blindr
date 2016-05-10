@@ -8,4 +8,16 @@
     <string name="height">Height</string>
     <string name="width">Width</string>
     <string name="untitled_map">Untitled map</string>
+    <string name="action_save">SAVE</string>
+    <string name="action_edit">EDIT</string>
+    <string name="action_fingerprinting">Fingerprinting</string>
+    <string name="selected">Selected</string>
+    <string name="near_wifi_aps">Near WiFi Access Points</string>
+    <string name="alert_delete_msg">¿Seguro que quieres borrar este mapa?</string>
+    <string name="alert_delete_title">Calma moreno!</string>
+    <string name="action_location_mode">Switch Location Mode</string>
+    <string name="scanning_sector">Escaneando Sector</string>
+    <string name="map_saved">Map saved :)</string>
+    <string name="title_activity_fingerprinting">Fingerprinting</string>
+    <string name="fragment_title_builder">Builder</string>
 </resources>

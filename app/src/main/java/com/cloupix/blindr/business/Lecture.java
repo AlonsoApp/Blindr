@@ -1,6 +1,8 @@
 package com.cloupix.blindr.business;
 
 import android.net.wifi.ScanResult;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by alonsousa on 6/12/15.
@@ -9,7 +11,7 @@ import android.net.wifi.ScanResult;
  * ScanResult no tiene un constructor público)
  *
  */
-public class Lecture {
+public class Lecture implements Parcelable{
 
     /**
      * ID of the lecture in the DataBase
@@ -47,7 +49,6 @@ public class Lecture {
 
     public Lecture() {
     }
-
     public Lecture(ScanResult scanResult) {
         this.mathGenerated = false;
         setScanResult(scanResult);
@@ -150,4 +151,44 @@ public class Lecture {
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
+
+    // Parcelling part
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(lectureId);
+        dest.writeByte((byte) (mathGenerated ? 1 : 0));
+        dest.writeString(BSSID);
+        dest.writeInt(level);
+        dest.writeInt(frequency);
+        dest.writeLong(sectorId);
+        dest.writeLong(timestamp);
+    }
+
+    protected Lecture(Parcel in) {
+        lectureId = in.readLong();
+        mathGenerated = in.readByte() != 0;
+        BSSID = in.readString();
+        level = in.readInt();
+        frequency = in.readInt();
+        sectorId = in.readLong();
+        timestamp = in.readLong();
+    }
+
+    public static final Creator<Lecture> CREATOR = new Creator<Lecture>() {
+        @Override
+        public Lecture createFromParcel(Parcel in) {
+            return new Lecture(in);
+        }
+
+        @Override
+        public Lecture[] newArray(int size) {
+            return new Lecture[size];
+        }
+    };
 }

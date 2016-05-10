@@ -1,8 +1,10 @@
 package com.cloupix.blindr.business;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
-import java.util.ArrayList;
+import com.cloupix.blindr.R;
 
 /**
  * Created by alonsoapp on 23/04/16.
@@ -10,27 +12,46 @@ import java.util.ArrayList;
  */
 public class SectorView extends Sector {
 
-    public static final int STROKE_N = 0;
-    public static final int STROKE_E = 1;
-    public static final int STROKE_S = 2;
-    public static final int STROKE_W = 3;
-    public static final int STROKE_NW_SE = 4;
-    public static final int STROKE_NE_SW = 5;
 
-    public static final boolean[] STROKE_EMPTY_SECTOR = new boolean[]{false, false, false, false, false, false};
-    // Visual properties
-    // [ N, E, S, W ]
-    private boolean[] stroke = STROKE_EMPTY_SECTOR;
+    private boolean nStroke, eStroke, sStroke, wStroke, nwseStroke, neswStroke;
 
-    private boolean scanned = false;
+    /**
+     * TODO Borrar esto del modelo de datos
+     * This parameter will be deprecated as the functionality it provides will be replaced by the
+     * amount of lectures.
+     * */
+    private boolean scanned;
     private long sectorViewId;
 
     public SectorView() {
+        this.nStroke = false;
+        this.eStroke = false;
+        this.sStroke = false;
+        this.wStroke = false;
+        this.nwseStroke = false;
+        this.neswStroke = false;
+        this.scanned = false;
     }
 
-    public SectorView(long sectorId, boolean[] stroke, boolean scanned) {
+    public SectorView(long sectorId) {
         super(sectorId);
-        this.stroke = stroke;
+        this.scanned = false;
+        this.nStroke = false;
+        this.eStroke = false;
+        this.sStroke = false;
+        this.wStroke = false;
+        this.nwseStroke = false;
+        this.neswStroke = false;
+    }
+
+    public SectorView(long sectorId, boolean nStroke, boolean eStroke, boolean sStroke, boolean wStroke, boolean nwseStroke, boolean neswStroke, boolean scanned) {
+        super(sectorId);
+        this.nStroke = nStroke;
+        this.eStroke = eStroke;
+        this.sStroke = sStroke;
+        this.wStroke = wStroke;
+        this.nwseStroke = nwseStroke;
+        this.neswStroke = neswStroke;
         this.scanned = scanned;
     }
 
@@ -38,69 +59,53 @@ public class SectorView extends Sector {
     // aqui no guardamso nada de info (que yo recuerde al menos, ya veremos que ando un poco
     // perdido que hace 4 meeses que no toco esto)
 
+
     public boolean isnStroke() {
-        return stroke[STROKE_N];
+        return nStroke;
     }
 
     public void setnStroke(boolean nStroke) {
-        this.stroke[STROKE_N] = nStroke;
+        this.nStroke = nStroke;
     }
 
     public boolean iseStroke() {
-        return stroke[STROKE_E];
+        return eStroke;
     }
 
     public void seteStroke(boolean eStroke) {
-        this.stroke[STROKE_E] = eStroke;
+        this.eStroke = eStroke;
     }
 
     public boolean issStroke() {
-        return stroke[STROKE_S];
+        return sStroke;
     }
 
     public void setsStroke(boolean sStroke) {
-        this.stroke[STROKE_S] = sStroke;
+        this.sStroke = sStroke;
     }
 
     public boolean iswStroke() {
-        return stroke[STROKE_W];
+        return wStroke;
     }
 
     public void setwStroke(boolean wStroke) {
-        this.stroke[STROKE_W] = wStroke;
+        this.wStroke = wStroke;
     }
 
-    public boolean isnwseStroke() {
-        return stroke[STROKE_NW_SE];
+    public boolean isNwseStroke() {
+        return nwseStroke;
     }
 
-    public void setnwseStroke(boolean nwseStroke) {
-        this.stroke[STROKE_NW_SE] = nwseStroke;
+    public void setNwseStroke(boolean nwseStroke) {
+        this.nwseStroke = nwseStroke;
     }
 
-    public boolean isneswStroke() {
-        return stroke[STROKE_NE_SW];
+    public boolean isNeswStroke() {
+        return neswStroke;
     }
 
-    public void setneswStroke(boolean neswStroke) {
-        this.stroke[STROKE_NE_SW] = neswStroke;
-    }
-
-
-    public boolean[] getStroke() {
-        return stroke;
-    }
-
-    public boolean getStroke(int ref) {
-        return stroke[ref];
-    }
-
-    public void setStroke(boolean[] stroke) {
-        this.stroke = stroke;
-    }
-
-    public void setStroke(int ref, int val){
-        stroke[ref] = val>0;
+    public void setNeswStroke(boolean neswStroke) {
+        this.neswStroke = neswStroke;
     }
 
     public boolean isScanned() {
@@ -132,6 +137,26 @@ public class SectorView extends Sector {
         wifiAPs.add(newWifiAP);
     }
 
+    public int getLocationProbabilityColorRes(){
+        double RED_THRESHOLD = 0.25;
+        double ORANGE_THRESHOLD = 0.15;
+        double YELLOW_THRESHOLD = 0.5;
+        double CREAM_THRESHOLD = 0.0;
+
+        double locProb = super.getLocationProbability();
+        if(locProb>=RED_THRESHOLD){
+            return R.color.location_red;
+        }else if(locProb>=ORANGE_THRESHOLD){
+            return R.color.location_orange;
+        }else if(locProb>=YELLOW_THRESHOLD){
+            return R.color.location_yellow;
+        }else if(locProb>CREAM_THRESHOLD){
+            return R.color.location_cream;
+        }else{
+            return android.R.color.transparent;
+        }
+    }
+
     public void mergeSector(Sector sector) {
         super.setSectorId(sector.getSectorId());
         super.setListN(sector.getListN());
@@ -141,4 +166,43 @@ public class SectorView extends Sector {
         super.setLatitude(sector.getLatitude());
         super.setLongitude(sector.getLongitude());
     }
+
+    public static final Parcelable.Creator<SectorView> CREATOR = new Parcelable.Creator<SectorView>() {
+        public SectorView createFromParcel(Parcel in) {
+            return new SectorView(in);
+        }
+
+        public SectorView[] newArray(int size) {
+            return new SectorView[size];
+        }
+    };
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeByte((byte) (nStroke ? 1 : 0));
+        dest.writeByte((byte) (eStroke ? 1 : 0));
+        dest.writeByte((byte) (sStroke ? 1 : 0));
+        dest.writeByte((byte) (wStroke ? 1 : 0));
+        dest.writeByte((byte) (nwseStroke ? 1 : 0));
+        dest.writeByte((byte) (neswStroke ? 1 : 0));
+        dest.writeByte((byte) (scanned ? 1 : 0));
+        dest.writeLong(sectorViewId);
+    }
+
+    private SectorView(Parcel in) {
+        super(in);
+        nStroke = in.readByte() != 0;
+        eStroke = in.readByte() != 0;
+        sStroke = in.readByte() != 0;
+        wStroke = in.readByte() != 0;
+        nwseStroke = in.readByte() != 0;
+        neswStroke = in.readByte() != 0;
+        scanned = in.readByte() != 0;
+        sectorViewId = in.readLong();
+    }
+
 }

@@ -1,12 +1,15 @@
 package com.cloupix.blindr.business;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 
 /**
  * Created by alonsousa on 15/12/15.
  *
  */
-public class Sector {
+public class Sector implements Parcelable {
 
     private long sectorId;
     private int listN;
@@ -15,6 +18,7 @@ public class Sector {
     private double latitude;
     private double longitude;
     private long mapId;
+    private double locationProbability;
 
     ArrayList<Lecture> lectures;
     ArrayList<WifiAP> wifiAPs;
@@ -50,6 +54,8 @@ public class Sector {
         this.lectures = new ArrayList<>();
         this.wifiAPs = new ArrayList<>();
     }
+
+
 
     public long getSectorId() {
         return sectorId;
@@ -121,5 +127,66 @@ public class Sector {
 
     public void setWifiAPs(ArrayList<WifiAP> wifiAPs) {
         this.wifiAPs = wifiAPs;
+    }
+
+    public boolean hasLectures(){
+        if(this.lectures == null)
+            return false;
+        return !this.lectures.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return this.matrixX + "x" + this.matrixY;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(sectorId);
+        dest.writeInt(listN);
+        dest.writeInt(matrixX);
+        dest.writeInt(matrixY);
+        dest.writeDouble(latitude);
+        dest.writeDouble(longitude);
+        dest.writeLong(mapId);
+        dest.writeList(lectures);
+        dest.writeList(wifiAPs);
+    }
+
+    protected Sector(Parcel in) {
+        sectorId = in.readLong();
+        listN = in.readInt();
+        matrixX = in.readInt();
+        matrixY = in.readInt();
+        latitude = in.readDouble();
+        longitude = in.readDouble();
+        mapId = in.readLong();
+        lectures = in.readArrayList(getClass().getClassLoader());
+        wifiAPs = in.readArrayList(getClass().getClassLoader());
+    }
+
+    public static final Creator<Sector> CREATOR = new Creator<Sector>() {
+        @Override
+        public Sector createFromParcel(Parcel in) {
+            return new Sector(in);
+        }
+
+        @Override
+        public Sector[] newArray(int size) {
+            return new Sector[size];
+        }
+    };
+
+    public double getLocationProbability() {
+        return locationProbability;
+    }
+
+    public void setLocationProbability(double locationProbability) {
+        this.locationProbability = locationProbability;
     }
 }

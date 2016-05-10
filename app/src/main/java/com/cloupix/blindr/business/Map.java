@@ -1,5 +1,7 @@
 package com.cloupix.blindr.business;
 
+import java.util.ArrayList;
+
 /**
  * Created by alonsoapp on 23/04/16.
  *
@@ -90,5 +92,24 @@ public class Map {
 
     public void addSector(SectorView sectorView, int listN) {
         this.aSectors[listN] = sectorView;
+    }
+
+    public void addLocationProbabilitySectors(Sector[] sectors){
+        double fraction = 1.0/sectors.length;
+        for(int i =0; i<sectors.length; i++){
+            double probability = 1.0-((fraction)*i);
+            if(sectors[i].getListN()<this.aSectors.length)
+                this.aSectors[sectors[i].getListN()].setLocationProbability(probability);
+        }
+    }
+
+    public ArrayList<WifiAP> getMapWifiAPs(){
+        ArrayList<WifiAP> wifiAPsInMap = new ArrayList<>();
+
+        for(Sector sector : aSectors){
+            wifiAPsInMap.addAll(sector.getWifiAPs());
+        }
+
+        return wifiAPsInMap;
     }
 }

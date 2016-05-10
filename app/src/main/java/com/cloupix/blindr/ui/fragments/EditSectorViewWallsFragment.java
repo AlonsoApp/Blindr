@@ -27,11 +27,20 @@ public class EditSectorViewWallsFragment extends Fragment implements View.OnClic
 
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(false);
+        /*
+        if(getActivity()!=null)
+                getActivity().setTitle("Sector " + sectorView.getMatrixX() + "x"+ sectorView.getMatrixY());
+                */
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(
-                R.layout.fragment_edit_sector_walls, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_edit_sector_walls, container, false);
         loadViewElements(rootView);
         return rootView;
     }
@@ -62,17 +71,13 @@ public class EditSectorViewWallsFragment extends Fragment implements View.OnClic
         updateViews();
     }
 
-    public void notifySectorViewChanged(){
-        updateViews();
-    }
-
     private void updateViews(){
-        nStroke.setBackgroundColor(getResources().getColor(sectorView.isnStroke()?R.color.wall_off:R.color.wall_on, null));
-        eStroke.setBackgroundColor(getResources().getColor(sectorView.iseStroke()?R.color.wall_off:R.color.wall_on, null));
-        sStroke.setBackgroundColor(getResources().getColor(sectorView.issStroke()?R.color.wall_off:R.color.wall_on, null));
-        wStroke.setBackgroundColor(getResources().getColor(sectorView.iswStroke()?R.color.wall_off:R.color.wall_on, null));
-        neswStroke.setBackgroundColor(getResources().getColor(sectorView.isneswStroke()?R.color.wall_off:R.color.wall_on, null));
-        nwseStroke.setBackgroundColor(getResources().getColor(sectorView.isnwseStroke()?R.color.wall_off:R.color.wall_on, null));
+        nStroke.setBackgroundColor(getResources().getColor(sectorView.isnStroke()?R.color.wall_on:R.color.wall_off, null));
+        eStroke.setBackgroundColor(getResources().getColor(sectorView.iseStroke()?R.color.wall_on:R.color.wall_off, null));
+        sStroke.setBackgroundColor(getResources().getColor(sectorView.issStroke()?R.color.wall_on:R.color.wall_off, null));
+        wStroke.setBackgroundColor(getResources().getColor(sectorView.iswStroke()?R.color.wall_on:R.color.wall_off, null));
+        neswStroke.setBackgroundColor(getResources().getColor(sectorView.isNeswStroke()?R.color.wall_on:R.color.wall_off, null));
+        nwseStroke.setBackgroundColor(getResources().getColor(sectorView.isNwseStroke()?R.color.wall_on:R.color.wall_off, null));
 
     }
 
@@ -92,10 +97,10 @@ public class EditSectorViewWallsFragment extends Fragment implements View.OnClic
                 sectorView.setwStroke(!sectorView.iswStroke());
                 break;
             case R.id.neswStroke:
-                sectorView.setneswStroke(!sectorView.isneswStroke());
+                sectorView.setNeswStroke(!sectorView.isNeswStroke());
                 break;
             case R.id.nwseStroke:
-                sectorView.setnwseStroke(!sectorView.isnwseStroke());
+                sectorView.setNwseStroke(!sectorView.isNwseStroke());
                 break;
         }
         updateViews();

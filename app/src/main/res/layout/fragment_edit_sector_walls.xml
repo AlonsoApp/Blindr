@@ -4,19 +4,18 @@
     android:layout_height="match_parent"
     android:padding="10dp">
 
-
-    <com.cloupix.blindr.business.SquareImageView
-        android:id="@+id/imgViewSector"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"/>
+<RelativeLayout
+    android:layout_width="310dp"
+    android:layout_height="310dp"
+    android:layout_centerInParent="true">
 
     <View
         android:id="@+id/nStroke"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="25dp"
         android:layout_marginEnd="30dp"
         android:layout_marginStart="30dp"
+        android:layout_centerHorizontal="true"
         android:background="@color/wall_off"
         android:layout_alignParentTop="true"
         android:clickable="true"/>
@@ -26,7 +25,8 @@
         android:layout_width="25dp"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
-        android:layout_height="match_parent"
+        android:layout_height="250dp"
+        android:layout_centerVertical="true"
         android:background="@color/wall_off"
         android:layout_alignParentEnd="true"
         android:clickable="true"/>
@@ -34,10 +34,11 @@
 
     <View
         android:id="@+id/sStroke"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="25dp"
         android:layout_marginEnd="30dp"
         android:layout_marginStart="30dp"
+        android:layout_centerHorizontal="true"
         android:background="@color/wall_off"
         android:layout_alignParentBottom="true"
         android:clickable="true"/>
@@ -47,7 +48,8 @@
         android:layout_width="25dp"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
-        android:layout_height="match_parent"
+        android:layout_height="250dp"
+        android:layout_centerVertical="true"
         android:background="@color/wall_off"
         android:layout_alignParentStart="true"
         android:clickable="true"/>
@@ -91,5 +93,9 @@
         android:textStyle="bold"
         android:visibility="invisible"
         android:text="1"/>
+
+</RelativeLayout>
+
+
 
 </RelativeLayout>

@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cloupix.blindr.R;
@@ -20,33 +21,37 @@ import com.cloupix.blindr.business.WifiAPView;
  */
 public class GridAdapter extends BaseAdapter {
 
+    public static final int LOCATION_MODE = 0;
+    public static final int BUILD_MODE = 1;
+    public static final int MAPPING_MODE = 2;
+
     private Context mContext;
 
     private LayoutInflater mInflater;
     private Map map;
 
-    private boolean buildMode;
+    private int viewMode;
 
 
-    public GridAdapter(Context c, Map map, boolean buildMode) {
+    public GridAdapter(Context c, Map map, int viewMode) {
         mContext = c;
         //listSectors = new ArrayList<>();
         this.map = map;
         this.mInflater = LayoutInflater.from(c);
-        this.buildMode = buildMode;
+        this.viewMode = viewMode;
 
     }
 
     public int getCount() {
-        return map.getaSectors().length;
+        return map==null?0:map.getaSectors().length;
     }
 
     public Object getItem(int position) {
-        return map.getaSectors()[position];
+        return map==null?0:map.getaSectors()[position];
     }
 
     public long getItemId(int position) {
-        return map.getaSectors()[position].getSectorId();
+        return map==null?-1:map.getaSectors()[position].getSectorId();
     }
 
     // create a new ImageView for each item referenced by the Adapter
@@ -72,16 +77,37 @@ public class GridAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
+        if(map==null)
+            return convertView;
+
         if(map.getaSectors()[position]!=null && map.getaSectors()[position] instanceof SectorView){
             SectorView sector = (SectorView) map.getaSectors()[position];
 
             // Dibujos
-            holder.nStroke.setVisibility(sector.getStroke(SectorView.STROKE_N)?View.VISIBLE:View.INVISIBLE);
-            holder.eStroke.setVisibility(sector.getStroke(SectorView.STROKE_E)?View.VISIBLE:View.INVISIBLE);
-            holder.sStroke.setVisibility(sector.getStroke(SectorView.STROKE_S)?View.VISIBLE:View.INVISIBLE);
-            holder.wStroke.setVisibility(sector.getStroke(SectorView.STROKE_W)?View.VISIBLE:View.INVISIBLE);
-            holder.neswStroke.setVisibility(sector.getStroke(SectorView.STROKE_NE_SW)?View.VISIBLE:View.INVISIBLE);
-            holder.nwseStroke.setVisibility(sector.getStroke(SectorView.STROKE_NW_SE)?View.VISIBLE:View.INVISIBLE);
+
+            // Si esta en build mode poneomos to do a visible y pintamos los no rellenados con off
+            if(viewMode == BUILD_MODE){
+                holder.nStroke.setVisibility(View.VISIBLE);
+                holder.eStroke.setVisibility(View.VISIBLE);
+                holder.sStroke.setVisibility(View.VISIBLE);
+                holder.wStroke.setVisibility(View.VISIBLE);
+                holder.neswStroke.setVisibility(View.VISIBLE);
+                holder.nwseStroke.setVisibility(View.VISIBLE);
+                holder.nStroke.setBackgroundColor(sector.isnStroke()?mContext.getColor(R.color.wall_on):mContext.getColor(R.color.wall_off));
+                holder.eStroke.setBackgroundColor(sector.iseStroke()?mContext.getColor(R.color.wall_on):mContext.getColor(R.color.wall_off));
+                holder.sStroke.setBackgroundColor(sector.issStroke()?mContext.getColor(R.color.wall_on):mContext.getColor(R.color.wall_off));
+                holder.wStroke.setBackgroundColor(sector.iswStroke()?mContext.getColor(R.color.wall_on):mContext.getColor(R.color.wall_off));
+                holder.neswStroke.setBackgroundColor(sector.isNeswStroke()?mContext.getColor(R.color.wall_on):mContext.getColor(R.color.wall_off));
+                holder.nwseStroke.setBackgroundColor(sector.isNwseStroke()?mContext.getColor(R.color.wall_on):mContext.getColor(R.color.wall_off));
+            }else{
+                // Si no hacemos el juego de visible invisible
+                holder.nStroke.setVisibility(sector.isnStroke()?View.VISIBLE:View.INVISIBLE);
+                holder.eStroke.setVisibility(sector.iseStroke()?View.VISIBLE:View.INVISIBLE);
+                holder.sStroke.setVisibility(sector.issStroke()?View.VISIBLE:View.INVISIBLE);
+                holder.wStroke.setVisibility(sector.iswStroke()?View.VISIBLE:View.INVISIBLE);
+                holder.neswStroke.setVisibility(sector.isNeswStroke()?View.VISIBLE:View.INVISIBLE);
+                holder.nwseStroke.setVisibility(sector.isNwseStroke()?View.VISIBLE:View.INVISIBLE);
+            }
 
             // Visualización del (los) WifiAP(s) en el sector
             if(sector.getWifiAPs().size()>0){
@@ -95,8 +121,8 @@ public class GridAdapter extends BaseAdapter {
                     holder.textViewApNumber.setText(text);
                 }else{
                     // 1 AP
-                    holder.imgViewCircle.setImageResource(((WifiAPView)sector.getWifiAPs().get(0)).getImgCircleRes());
-                    holder.textViewApNumber.setText(((WifiAPView)sector.getWifiAPs().get(0)).getApNumber());
+                    holder.imgViewCircle.setImageResource(((WifiAPView)sector.getWifiAPs().get(0)).getBackgroundCircleRes());
+                    holder.textViewApNumber.setText(Integer.toString(((WifiAPView)sector.getWifiAPs().get(0)).getApNumber()));
                 }
                 holder.imgViewCircle.setVisibility(View.VISIBLE);
                 holder.textViewApNumber.setVisibility(View.VISIBLE);
@@ -106,14 +132,21 @@ public class GridAdapter extends BaseAdapter {
                 holder.textViewApNumber.setVisibility(View.INVISIBLE);
             }
 
-            // Completed or not
-            if(!buildMode) {
-                int color = sector.isScanned()? mContext.getColor(android.R.color.holo_green_light):mContext.getColor(android.R.color.transparent);
+            // Sector background color
+            if(viewMode == MAPPING_MODE) {
+                int color = sector.hasLectures()? mContext.getColor(R.color.scanned):mContext.getColor(android.R.color.transparent);
+                holder.imgViewSector.setBackgroundColor(color);
+            }else if(viewMode == LOCATION_MODE){
+                int color = mContext.getColor(sector.getLocationProbabilityColorRes());
                 holder.imgViewSector.setBackgroundColor(color);
             }
         }
 
         return convertView;
+    }
+
+    public void setViewMode(int viewMode) {
+        this.viewMode = viewMode;
     }
 
 
@@ -126,11 +159,13 @@ public class GridAdapter extends BaseAdapter {
 
     // Helpers
 
+    /*
     public void setSectorComplete(int position){
         if(map.getaSectors()[position]!=null && map.getaSectors()[position] instanceof SectorView)
             ((SectorView)map.getaSectors()[position]).setScanned(true);
         notifyDataSetChanged();
     }
+    */
 
     public void setMap(Map map){
         this.map = map;

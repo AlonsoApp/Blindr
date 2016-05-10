@@ -2,6 +2,7 @@ package com.cloupix.blindr.logic;
 
 import android.content.Context;
 
+import com.cloupix.blindr.business.Lecture;
 import com.cloupix.blindr.business.Map;
 import com.cloupix.blindr.business.Sector;
 import com.cloupix.blindr.business.SectorView;
@@ -27,7 +28,7 @@ public class MapLogic {
                 int[] matrixXY = getMatrixXYByListN(i, height, width);
                 // TODO Calcular lat long asociadas a ese sector
                 long sectorId = dao.insertSector(new Sector(i, matrixXY[0], matrixXY[1], 0, 0, mapId));
-                dao.insertSectorView(new SectorView(sectorId, SectorView.STROKE_EMPTY_SECTOR, false));
+                dao.insertSectorView(new SectorView(sectorId));
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -62,12 +63,73 @@ public class MapLogic {
         return map;
     }
 
+    public ArrayList<Map> getAllMapsEmpty(Context context) {
+        ArrayList<Map> mapArrayList = new ArrayList<>();
+        Dao dao = new Dao(context);
+        try{
+            dao.open();
+            mapArrayList = dao.getMaps();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(dao.isConnectionOpen())
+                dao.close();
+        }
+        return mapArrayList;
+    }
+
+    public void saveMap(Map map, Context context) {
+        Dao dao = new Dao(context);
+        try{
+            dao.open();
+            dao.updateMap(map);
+            for(Sector sector : map.getaSectors()) {
+                dao.updateSector(sector);
+                if(sector instanceof SectorView)
+                    dao.updateSectorView((SectorView) sector);
+                dao.deleteLectureBySectorId(sector.getSectorId());
+                for (Lecture lecture : sector.getLectures())
+                    dao.insertLecture(lecture);
+                dao.deleteWifiAPSectorBySectorId(sector.getSectorId());
+                for (WifiAP wifiAP : sector.getWifiAPs()){
+                    if(dao.getWifiAPByBSSID(wifiAP.getBSSID()) == null)
+                        dao.insertWifiAP(wifiAP);
+                    long wifiAPSectorId = dao.insertWifiAPSector(new Dao.WifiAPSector(wifiAP.getBSSID(), sector.getSectorId()));
+                    if(wifiAP instanceof WifiAPView)
+                        dao.insertWifiAPView((WifiAPView) wifiAP, wifiAPSectorId);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(dao.isConnectionOpen())
+                dao.close();
+        }
+    }
+
+    public void deleteMap(long mapId, Context context) {
+        Dao dao = new Dao(context);
+        try{
+            dao.open();
+            dao.deleteMapById(mapId);
+            // No borramos to_do porque esta to_do puesto ON DELETE CASCADE y debería borrarse to_do automáticamente
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(dao.isConnectionOpen())
+                dao.close();
+        }
+    }
+
     private ArrayList<WifiAP> getWifiAPViewsBySectorId(long sectorId, Dao dao){
         ArrayList<WifiAP> wifiAPs = new ArrayList<>();
         ArrayList<Dao.WifiAPSector> wifiAPSectors = dao.getWifiAPSectorBySectorId(sectorId);
         for(Dao.WifiAPSector wifiAPSector : wifiAPSectors){
             WifiAP wifiAP = dao.getWifiAPByBSSID(wifiAPSector.getBSSID());
-            WifiAPView wifiAPView = dao.getWifiAPViewByBSSID(wifiAP.getBSSID());
+            WifiAPView wifiAPView = dao.getWifiAPViewByWifiAPSectorId(wifiAPSector.getWifiAPSectorId());
             wifiAPView.mergeWifiAP(wifiAP);
             wifiAPs.add(wifiAPView);
         }
@@ -109,5 +171,21 @@ public class MapLogic {
                 dao.close();
         }
         return sectorView;
+    }
+
+    public boolean existMap(long mapId, Context context) {
+        boolean exists = false;
+        Dao dao = new Dao(context);
+        try{
+            dao.open();
+            exists = !(dao.getMapById(mapId)==null);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(dao.isConnectionOpen())
+                dao.close();
+        }
+        return exists;
     }
 }

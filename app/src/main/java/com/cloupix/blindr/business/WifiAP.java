@@ -1,5 +1,10 @@
 package com.cloupix.blindr.business;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.cloupix.blindr.business.comparators.LevelMapComparator;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -8,7 +13,7 @@ import java.util.TreeMap;
  * Created by alonsousa on 6/12/15.
  *
  */
-public class WifiAP {
+public class WifiAP implements Parcelable {
 
 
     /**
@@ -120,4 +125,32 @@ public class WifiAP {
 
         return sorted_map;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(SSID);
+        dest.writeString(BSSID);
+    }
+
+    protected WifiAP(Parcel in) {
+        SSID = in.readString();
+        BSSID = in.readString();
+    }
+
+    public static final Creator<WifiAP> CREATOR = new Creator<WifiAP>() {
+        @Override
+        public WifiAP createFromParcel(Parcel in) {
+            return new WifiAP(in);
+        }
+
+        @Override
+        public WifiAP[] newArray(int size) {
+            return new WifiAP[size];
+        }
+    };
 }

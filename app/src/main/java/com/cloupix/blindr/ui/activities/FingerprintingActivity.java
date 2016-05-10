@@ -7,13 +7,13 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.view.MenuItem;
 
 import com.cloupix.blindr.R;
 import com.cloupix.blindr.ui.fragments.FingerprintingFragment;
-import com.cloupix.blindr.ui.fragments.NewMapFragment;
+import com.cloupix.blindr.ui.fragments.MapBuilderFragment;
 
-public class FingerprintingActivity extends AppCompatActivity {
+public class FingerprintingActivity extends AppCompatActivity implements FingerprintingFragment.FingerprintingFragmentCallbacks {
 
     private static final int FINGERPRINTING_FRAGMENT = 0;
     public static final int NEW_MAP_FRAGMENT = 1;
@@ -30,16 +30,7 @@ public class FingerprintingActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
-        // Esto es el botón de abajo a la derecha
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                replaceFragment(NEW_MAP_FRAGMENT, null);
-            }
-        });
-
-        // TODO Aqui en ved de null pondíamos el mapa que queremos cargar
+        // Abrimos siempre el fingerprinting_fragment y él ya se encargará de mirar si hay maps creados y pedirnos que saquemos el newMapFragment si no hay
         replaceFragment(FINGERPRINTING_FRAGMENT, null);
     }
 
@@ -55,13 +46,13 @@ public class FingerprintingActivity extends AppCompatActivity {
                 // We hide the Fab button
                 updateFloatingActionButton(false);
                 if(newMapFragment == null)
-                    newMapFragment = new NewMapFragment();
+                    newMapFragment = new MapBuilderFragment();
                 return newMapFragment;
             case EDIT_MAP_FRAGMENT:
                 // We hide the Fab button
                 updateFloatingActionButton(false);
                 if(newMapFragment == null)
-                    newMapFragment = new NewMapFragment();
+                    newMapFragment = new MapBuilderFragment();
                 return newMapFragment;
             default:
                 fingerprintingFragment = new FingerprintingFragment();
@@ -80,8 +71,7 @@ public class FingerprintingActivity extends AppCompatActivity {
 
         if (!fragmentPopped && manager.findFragmentByTag(fragmentTag) == null){
             //fragment not in back stack, create it.
-            if(args!=null)
-                fragment.setArguments(args);
+            fragment.setArguments(args);
             FragmentTransaction ft = manager.beginTransaction();
             ft.replace(R.id.fragment_container, fragment, fragmentTag);
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -100,13 +90,37 @@ public class FingerprintingActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save:
+                // This is for the fragment
+                return false;
+            default:
+                break;
+        }
+
+        return false;
+    }
+
+    @Override
     public void onBackPressed(){
         if (getFragmentManager().getBackStackEntryCount() == 1){
             finish();
         }
         else {
-            super.onBackPressed();
+            getFragmentManager().popBackStack();
         }
     }
 
+    @Override
+    public void onEditMap(long mapId) {
+        Bundle args = new Bundle();
+        args.putLong(MapBuilderFragment.ARG_MAP_ID, mapId);
+        replaceFragment(NEW_MAP_FRAGMENT, args);
+    }
+
+    @Override
+    public void onNewMap() {
+        replaceFragment(NEW_MAP_FRAGMENT, null);
+    }
 }

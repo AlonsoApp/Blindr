@@ -1,4 +1,4 @@
-package com.cloupix.blindr.business;
+package com.cloupix.blindr.business.comparators;
 
 import java.util.Comparator;
 import java.util.Map;
