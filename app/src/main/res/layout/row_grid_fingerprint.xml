@@ -80,7 +80,12 @@
             android:fontFamily="sans-serif-light"
             android:text="1"/>
 
-
+        <TextView
+            android:id="@+id/textViewProbability"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center" />
 
     </com.cloupix.blindr.business.SquareRelativeLayout>
 

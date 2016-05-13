@@ -71,6 +71,7 @@ public class GridAdapter extends BaseAdapter {
             holder.nwseStroke = convertView.findViewById(R.id.nwseStroke);
             holder.imgViewCircle = (ImageView) convertView.findViewById(R.id.imgViewCircle);
             holder.textViewApNumber = (TextView) convertView.findViewById(R.id.textViewApNumber);
+            holder.textViewProbability = (TextView) convertView.findViewById(R.id.textViewProbability);
             convertView.setTag(holder);
         }else
         {
@@ -134,11 +135,21 @@ public class GridAdapter extends BaseAdapter {
 
             // Sector background color
             if(viewMode == MAPPING_MODE) {
-                int color = sector.hasLectures()? mContext.getColor(R.color.scanned):mContext.getColor(android.R.color.transparent);
-                holder.imgViewSector.setBackgroundColor(color);
+
             }else if(viewMode == LOCATION_MODE){
-                int color = mContext.getColor(sector.getLocationProbabilityColorRes());
-                holder.imgViewSector.setBackgroundColor(color);
+
+            }
+
+            switch (viewMode){
+                case MAPPING_MODE:
+                    int color = sector.hasLectures()? mContext.getColor(R.color.scanned):mContext.getColor(android.R.color.transparent);
+                    holder.imgViewSector.setBackgroundColor(color);
+                    break;
+                case LOCATION_MODE:
+                    int color2 = mContext.getColor(sector.getLocationProbabilityColorRes());
+                    holder.imgViewSector.setBackgroundColor(color2);
+                    holder.textViewProbability.setText(Double.toString(sector.getLocationProbability()));
+                    break;
             }
         }
 
@@ -153,7 +164,7 @@ public class GridAdapter extends BaseAdapter {
     static class ViewHolder {
         SquareImageView imgViewSector;
         View nStroke, eStroke, sStroke, wStroke, nwseStroke, neswStroke;
-        TextView textViewApNumber;
+        TextView textViewApNumber, textViewProbability;
         ImageView imgViewCircle;
     }
 
