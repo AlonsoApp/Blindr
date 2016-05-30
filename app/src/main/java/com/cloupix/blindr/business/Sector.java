@@ -11,6 +11,10 @@ import java.util.ArrayList;
  */
 public class Sector implements Parcelable {
 
+    public static final int MATH_GENERATED_READINGS = 0;
+    public static final int MAPPED_READINGS = 1;
+    public static final int ALL_READINGS = 2;
+
     private long sectorId;
     private int listN;
     private int matrixX;
@@ -121,6 +125,19 @@ public class Sector implements Parcelable {
         return readings;
     }
 
+    public ArrayList<Reading> getReadings(int readingType) {
+        switch (readingType){
+            case MATH_GENERATED_READINGS:
+                return getMathGeneratedReadings();
+            case MAPPED_READINGS:
+                return getMappedReadings();
+            case ALL_READINGS:
+                return readings;
+            default:
+                return readings;
+        }
+    }
+
     public void setReadings(ArrayList<Reading> readings) {
         this.readings = readings;
     }
@@ -217,5 +234,21 @@ public class Sector implements Parcelable {
     public boolean hasLatLong() {
         //TODO Esto no está del todo bien, poner un valor -1 a los lat long que no tengan valor que comprobar con eso
         return latitude!=0 && longitude!=0;
+    }
+
+    private ArrayList<Reading> getMathGeneratedReadings() {
+        ArrayList<Reading> mathGeneratedReadings = new ArrayList<>();
+        for(Reading reading : readings)
+            if(reading.isMathGenerated())
+                mathGeneratedReadings.add(reading);
+        return mathGeneratedReadings;
+    }
+
+    private ArrayList<Reading> getMappedReadings() {
+        ArrayList<Reading> mathGeneratedReadings = new ArrayList<>();
+        for(Reading reading : readings)
+            if(!reading.isMathGenerated())
+                mathGeneratedReadings.add(reading);
+        return mathGeneratedReadings;
     }
 }

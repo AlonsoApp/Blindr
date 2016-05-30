@@ -18,19 +18,29 @@ public class LocationLogic {
 
     ArrayList<Integer> filteredValues = new ArrayList<Integer>();
 
+    public void compareMathGeneratedReadings(Map map){
+        ArrayList<WifiAP> wifiAPsInMap = map.getMapWifiAPs();
+        HashMap<String, ArrayList<Integer>> template = getWifiAPLevelHashMap(wifiAPsInMap);
+        HashMap<String, ArrayList<Integer>>[] templateWithValues = fillTemplate(map, template, Sector.MAPPED_READINGS);
+        HashMap<String, Double>[] mapWithAverageValues = getAverageValuesArray(templateWithValues);
 
-    public void getSectorProbabilities(Map map, ArrayList<Reading> readings){
+        for(Sector sector : map.getaSectors()){
+            HashMap<String, ArrayList<Integer>> readingsWithValues = getWifiAPLevelHashMapFromReadings(sector.getReadings(Sector.MATH_GENERATED_READINGS));
+            HashMap<String, ArrayList<Integer>> curatedReadingsWithValues = deleteReadingsFromWifiAPsNotInMap(readingsWithValues, wifiAPsInMap);
+            HashMap<String, Double> readingsWithAverageValues = getAverageValueHashMap(curatedReadingsWithValues);
+            double euclideanDistance = getEuclideanDistance(mapWithAverageValues[sector.getListN()], readingsWithAverageValues);
+            sector.setLocationProbability(euclideanDistance);
+            // TODO Primero ver en que orden andan las distancias euclideas para luego meterles probabilidad o algo
+        }
+    }
+
+    public void getSectorProbabilities(Map map, ArrayList<Reading> readings, int readingType){
 
         ArrayList<WifiAP> wifiAPsInMap = map.getMapWifiAPs();
         HashMap<String, ArrayList<Integer>> template = getWifiAPLevelHashMap(wifiAPsInMap);
-        HashMap<String, ArrayList<Integer>>[] templateWithValues = fillTemplate(map, template);
+        HashMap<String, ArrayList<Integer>>[] templateWithValues = fillTemplate(map, template, readingType);
 
-        HashMap<String, Double>[] mapWithAverageValues = null;
-        try{
-            mapWithAverageValues = getAverageValuesArray(templateWithValues);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        HashMap<String, Double>[] mapWithAverageValues = getAverageValuesArray(templateWithValues);
         HashMap<String, ArrayList<Integer>> readingsWithValues = getWifiAPLevelHashMapFromReadings(readings);
         HashMap<String, ArrayList<Integer>> curatedReadingsWithValues = deleteReadingsFromWifiAPsNotInMap(readingsWithValues, wifiAPsInMap);
         HashMap<String, Double> readingsWithAverageValues = getAverageValueHashMap(curatedReadingsWithValues);
@@ -90,12 +100,12 @@ public class LocationLogic {
      * @param template
      * @return
      */
-    private HashMap<String, ArrayList<Integer>>[] fillTemplate(Map map, HashMap<String, ArrayList<Integer>> template){
+    private HashMap<String, ArrayList<Integer>>[] fillTemplate(Map map, HashMap<String, ArrayList<Integer>> template, int readingType){
         HashMap<String, ArrayList<Integer>>[] result = new HashMap[map.getaSectors().length];
         for(int i=0; i<result.length; i++)
             result[i] = new HashMap<>();
         for(Sector sector : map.getaSectors()){
-            for(final Reading reading : sector.getReadings()) {
+            for(final Reading reading : sector.getReadings(readingType)) {
                 // Descartamso als lecturas que no estén en la plantilla
                 if(template.containsKey(reading.getBSSID())){
                     if (!result[sector.getListN()].containsKey(reading.getBSSID()))

@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_versus_mode"
-        android:title="@string/action_versus_mode"
+        android:id="@+id/action_compare_mode"
+        android:title="@string/action_compare_mode"
         app:showAsAction="ifRoom"
         android:icon="@mipmap/ic_graphic_eq_white_48dp"/>
 

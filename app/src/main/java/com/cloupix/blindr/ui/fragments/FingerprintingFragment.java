@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.wifi.ScanResult;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -20,10 +19,10 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.cloupix.blindr.R;
 import com.cloupix.blindr.business.Map;
+import com.cloupix.blindr.business.Sector;
 import com.cloupix.blindr.business.adapters.GridAdapter;
 import com.cloupix.blindr.business.Reading;
 import com.cloupix.blindr.logic.LocationLogic;
@@ -50,6 +49,7 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
 
     private int lecturesPerScan = 8;
     private int currentMode;
+    private int currentLocationReadingType = Sector.ALL_READINGS;
 
     private WifiLogic wifiLogic;
     private MapLogic mapLogic;
@@ -198,7 +198,7 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_edit:
                 mCallbacks.onEditMap(map.getMapId());
@@ -207,14 +207,34 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
                 if(wifiLogic == null)
                     wifiLogic = new WifiLogic(getActivity());
                 switch (currentMode){
+                    case GridAdapter.COMPARE_MODE:
                     case GridAdapter.MAPPING_MODE:
-                        gridView.setClickable(false);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setTitle(R.string.alert_select_location_mode);
+                        builder.setMessage(R.string.alert_select_location_mode_msg);
+                        builder.setNegativeButton(R.string.math_generated, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                currentLocationReadingType = Sector.MATH_GENERATED_READINGS;
+                                startLocationMode(item);
+                            }
+                        });
+                        builder.setNeutralButton(R.string.mapped, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                currentLocationReadingType = Sector.MAPPED_READINGS;
+                                startLocationMode(item);
+                            }
+                        });
+                        builder.setPositiveButton(R.string.all_readings, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                currentLocationReadingType = Sector.ALL_READINGS;
+                                startLocationMode(item);
 
-                        wifiLogic.startScan(this, WifiLogic.SCAN_LOOP_INIFINITE);
-                        gridAdapter.setViewMode(GridAdapter.LOCATION_MODE);
-
-                        currentMode = GridAdapter.LOCATION_MODE;
-                        item.setIcon(R.mipmap.ic_pause_white_48dp);
+                            }
+                        });
+                        builder.show();
                         break;
                     case GridAdapter.LOCATION_MODE:
                         gridView.setClickable(true);
@@ -229,6 +249,21 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
                 }
 
                 return true;
+            case R.id.action_compare_mode:
+                switch (currentMode){
+                    case GridAdapter.COMPARE_MODE:
+                        gridAdapter.setViewMode(GridAdapter.MAPPING_MODE);
+                        gridAdapter.notifyDataSetChanged();
+                        currentMode = GridAdapter.MAPPING_MODE;
+                        break;
+                    default:
+                        MapLogic mapLogic = new MapLogic();
+                        mapLogic.compareMathGeneratedReadings(map);
+                        gridAdapter.setViewMode(GridAdapter.COMPARE_MODE);
+                        gridAdapter.notifyDataSetChanged();
+                        currentMode = GridAdapter.COMPARE_MODE;
+                }
+                break;
             default:
                 break;
         }
@@ -270,7 +305,7 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                for(Reading reading : map.getSector(position).getReadings())
+                for(Reading reading : map.getSector(position).getReadings(Sector.ALL_READINGS))
                     reading.setDeleteDBEntity(true);
                 //map.getSector(position).getReadings().clear();
                 gridAdapter.notifyDataSetChanged();
@@ -302,6 +337,17 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
         gridAdapter.notifyDataSetChanged();
     }
 
+    private void startLocationMode(MenuItem item){
+
+        gridView.setClickable(false);
+
+        wifiLogic.startScan(this, WifiLogic.SCAN_LOOP_INIFINITE);
+        gridAdapter.setViewMode(GridAdapter.LOCATION_MODE);
+
+        currentMode = GridAdapter.LOCATION_MODE;
+        item.setIcon(R.mipmap.ic_pause_white_48dp);
+    }
+
 
     // Este metodo coge una lista de APs del ultimo escaneo y mete las lecturas nuevas en los
     // WifiAPs de la lista que ya estaban creados en este punto y crea nuevos WifiAPs si la lectura
@@ -320,7 +366,7 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
 
         if(contReadings >= READINGS_PER_LOC){
             LocationLogic locationLogic = new LocationLogic();
-            locationLogic.getSectorProbabilities(map, readingGroup);
+            locationLogic.getSectorProbabilities(map, readingGroup, currentLocationReadingType);
             readingGroup.clear();
             contReadings = 0;
             gridAdapter.notifyDataSetChanged();

@@ -134,5 +134,4 @@ public class Map {
                 maxSectorProb = sector.getLocationProbability();
         return maxSectorProb;
     }
-
 }

@@ -26,6 +26,7 @@ public class GridAdapter extends BaseAdapter {
     public static final int LOCATION_MODE = 0;
     public static final int BUILD_MODE = 1;
     public static final int MAPPING_MODE = 2;
+    public static final int COMPARE_MODE = 3;
 
     private Context mContext;
 
@@ -150,11 +151,18 @@ public class GridAdapter extends BaseAdapter {
                 case MAPPING_MODE:
                     int color = sector.hasNonDeletedReadings()? mContext.getColor(R.color.scanned):mContext.getColor(android.R.color.transparent);
                     holder.imgViewSector.setBackgroundColor(color);
+                    holder.textViewProbability.setVisibility(View.INVISIBLE);
                     break;
                 case LOCATION_MODE:
                     int color2 = mContext.getColor(sector.getLocationProbabilityColorRes(maxSectorProbability));
                     holder.imgViewSector.setBackgroundColor(color2);
                     holder.textViewProbability.setText(Double.toString(sector.getLocationProbability()));
+                    holder.textViewProbability.setVisibility(View.VISIBLE);
+                    break;
+                case COMPARE_MODE:
+                    holder.imgViewSector.setBackgroundColor(mContext.getColor(android.R.color.transparent));
+                    holder.textViewProbability.setText(Double.toString(sector.getLocationProbability()));
+                    holder.textViewProbability.setVisibility(View.VISIBLE);
                     break;
             }
         }

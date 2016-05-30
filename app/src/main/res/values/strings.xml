@@ -33,5 +33,10 @@
     <string name="alert_clear_sector_msg">Do you whant to remove all this sector\'s readigns?</string>
     <string name="action_export_database">Export Database</string>
     <string name="action_import_database">Import database</string>
-    <string name="action_versus_mode">Compare math generated Readings</string>
+    <string name="action_compare_mode">Compare math generated Readings</string>
+    <string name="math_generated">Math Generated</string>
+    <string name="mapped">Mapped</string>
+    <string name="all_readings">All</string>
+    <string name="alert_select_location_mode">Location Mode</string>
+    <string name="alert_select_location_mode_msg">Which kind of readings do you whant for the location process?</string>
 </resources>
