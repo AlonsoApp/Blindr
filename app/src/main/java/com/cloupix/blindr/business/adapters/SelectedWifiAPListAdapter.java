@@ -1,6 +1,9 @@
 package com.cloupix.blindr.business.adapters;
 
 import android.content.Context;
+import android.text.Spannable;
+import android.text.Spanned;
+import android.text.style.StrikethroughSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +13,7 @@ import android.widget.TextView;
 
 import com.cloupix.blindr.R;
 import com.cloupix.blindr.business.WifiAP;
+import com.cloupix.blindr.business.WifiAPView;
 
 import java.util.ArrayList;
 
@@ -18,6 +22,8 @@ import java.util.ArrayList;
  *
  */
 public class SelectedWifiAPListAdapter extends BaseAdapter {
+
+    private static final StrikethroughSpan STRIKE_THROUGH_SPAN = new StrikethroughSpan();
 
     private ArrayList<WifiAP> listWifiAPs;
     private LayoutInflater mInflater;
@@ -60,14 +66,27 @@ public class SelectedWifiAPListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        WifiAP wifiAp = listWifiAPs.get(position);
+        final WifiAP wifiAp = listWifiAPs.get(position);
 
-        holder.textViewSSID.setText(wifiAp.getSSID());
+        // Tachamos el nombre dle wifiAP si esta borrado y quitamos el botón
+        if(wifiAp instanceof WifiAPView){
+            if(((WifiAPView)wifiAp).isDeleteDBEntity()){
+                holder.textViewSSID.setText(wifiAp.getSSID(), TextView.BufferType.SPANNABLE);
+                Spannable spannable = (Spannable) holder.textViewSSID.getText();
+                spannable.setSpan(STRIKE_THROUGH_SPAN, 0, wifiAp.getSSID().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                holder.btnRemove.setVisibility(View.INVISIBLE);
+            }else
+                holder.textViewSSID.setText(wifiAp.getSSID());
+        }else{
+            holder.textViewSSID.setText(wifiAp.getSSID());
+        }
         holder.textViewBSSID.setText(wifiAp.getBSSID());
         holder.btnRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listWifiAPs.remove(position);
+                //listWifiAPs.remove(position);
+                if(wifiAp instanceof WifiAPView)
+                    ((WifiAPView)listWifiAPs.get(position)).setDeleteDBEntity(true);
                 notifyDataSetChanged();
             }
         });

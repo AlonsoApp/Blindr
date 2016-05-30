@@ -50,10 +50,10 @@ public class BlindrDbContract {
         public static final String COLUMN_NAME_SECTOR_ID = "sector_id";
     }
 
-    public static abstract class Lecture implements BaseColumns {
+    public static abstract class Reading implements BaseColumns {
 
-        public static final String TABLE_NAME = "lecture";
-        public static final String COLUMN_NAME_LECTURE_ID = "lecture_id";
+        public static final String TABLE_NAME = "reading";
+        public static final String COLUMN_NAME_READING_ID = "reading_id";
         public static final String COLUMN_NAME_MATH_GENERATED = "math_generated";
         public static final String COLUMN_NAME_LEVEL = "level";
         public static final String COLUMN_NAME_FRENQUENCY = "frequency";
@@ -133,20 +133,20 @@ public class BlindrDbContract {
                     " REFERENCES "+ Sector.TABLE_NAME+" ("+ Sector.COLUMN_NAME_SECTOR_ID+") ON DELETE CASCADE" +
                     " UNIQUE (" + SectorView.COLUMN_NAME_SECTOR_VIEW_ID + ") ON CONFLICT REPLACE" +
                     " );";
-    public static final String SQL_CREATE_TABLE_LECTURE =
-            "CREATE TABLE " + Lecture.TABLE_NAME + " (" +
-                    Lecture.COLUMN_NAME_LECTURE_ID + INTEGER_TYPE + " PRIMARY KEY AUTOINCREMENT" + COMMA_SEP +
-                    Lecture.COLUMN_NAME_MATH_GENERATED + INTEGER_TYPE + COMMA_SEP +
-                    Lecture.COLUMN_NAME_LEVEL + INTEGER_TYPE + COMMA_SEP +
-                    Lecture.COLUMN_NAME_FRENQUENCY + INTEGER_TYPE + COMMA_SEP +
-                    Lecture.COLUMN_NAME_TIMESTAMP + INTEGER_TYPE + COMMA_SEP +
-                    Lecture.COLUMN_NAME_BSSID + TEXT_TYPE + COMMA_SEP +
-                    Lecture.COLUMN_NAME_SECTOR_ID + INTEGER_TYPE + COMMA_SEP +
-                    " FOREIGN KEY ("+ Lecture.COLUMN_NAME_BSSID+")" +
+    public static final String SQL_CREATE_TABLE_READING =
+            "CREATE TABLE " + Reading.TABLE_NAME + " (" +
+                    Reading.COLUMN_NAME_READING_ID + INTEGER_TYPE + " PRIMARY KEY AUTOINCREMENT" + COMMA_SEP +
+                    Reading.COLUMN_NAME_MATH_GENERATED + INTEGER_TYPE + COMMA_SEP +
+                    Reading.COLUMN_NAME_LEVEL + INTEGER_TYPE + COMMA_SEP +
+                    Reading.COLUMN_NAME_FRENQUENCY + INTEGER_TYPE + COMMA_SEP +
+                    Reading.COLUMN_NAME_TIMESTAMP + INTEGER_TYPE + COMMA_SEP +
+                    Reading.COLUMN_NAME_BSSID + TEXT_TYPE + COMMA_SEP +
+                    Reading.COLUMN_NAME_SECTOR_ID + INTEGER_TYPE + COMMA_SEP +
+                    " FOREIGN KEY ("+ Reading.COLUMN_NAME_BSSID+")" +
                     " REFERENCES "+ WifiAP.TABLE_NAME+" ("+ WifiAP.COLUMN_NAME_BSSID+") " +
-                    " FOREIGN KEY ("+ Lecture.COLUMN_NAME_SECTOR_ID+")" +
+                    " FOREIGN KEY ("+ Reading.COLUMN_NAME_SECTOR_ID+")" +
                     " REFERENCES "+ Sector.TABLE_NAME+" ("+ Sector.COLUMN_NAME_SECTOR_ID+") ON DELETE CASCADE" +
-                    " UNIQUE (" + Lecture.COLUMN_NAME_LECTURE_ID + ") ON CONFLICT REPLACE" +
+                    " UNIQUE (" + Reading.COLUMN_NAME_READING_ID + ") ON CONFLICT REPLACE" +
                     " );";
     public static final String SQL_CREATE_TABLE_WIFI_AP =
             "CREATE TABLE " + WifiAP.TABLE_NAME + " (" +
@@ -182,8 +182,8 @@ public class BlindrDbContract {
             "DROP TABLE IF EXISTS " + Sector.TABLE_NAME;
     public static final String SQL_DELETE_TABLE_SECTOR_VIEW =
             "DROP TABLE IF EXISTS " + SectorView.TABLE_NAME;
-    public static final String SQL_DELETE_TABLE_LECTURE =
-            "DROP TABLE IF EXISTS " + Lecture.TABLE_NAME;
+    public static final String SQL_DELETE_TABLE_READING =
+            "DROP TABLE IF EXISTS " + Reading.TABLE_NAME;
     public static final String SQL_DELETE_TABLE_WIFI_AP =
             "DROP TABLE IF EXISTS " + WifiAP.TABLE_NAME;
     public static final String SQL_DELETE_TABLE_WIFI_AP_VIEW =

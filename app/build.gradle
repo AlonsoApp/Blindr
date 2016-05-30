@@ -30,4 +30,5 @@ dependencies {
     compile 'com.android.support:design:23.3.0'
     compile 'com.github.PhilJay:MPAndroidChart:v2.2.4'
     compile 'com.android.support:support-v13:23.3.0'
+    compile files('libs/commons-math3-3.6.1.jar')
 }

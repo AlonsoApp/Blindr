@@ -18,7 +18,7 @@ public class SectorView extends Sector {
     /**
      * TODO Borrar esto del modelo de datos
      * This parameter will be deprecated as the functionality it provides will be replaced by the
-     * amount of lectures.
+     * amount of readings.
      * */
     private boolean scanned;
     private long sectorViewId;
@@ -132,16 +132,20 @@ public class SectorView extends Sector {
         // Si ya esta en la lista no lo volvemso a meter
         for(WifiAP wifiAP: wifiAPs){
             if(TextUtils.equals(wifiAP.getBSSID(), newWifiAP.getBSSID()))
-                return;
+                if(wifiAP instanceof WifiAPView)
+                    if(!((WifiAPView)wifiAP).isDeleteDBEntity())
+                        return;
+                else
+                    return;
         }
         wifiAPs.add(newWifiAP);
     }
 
-    public int getLocationProbabilityColorRes(){
-        double RED_THRESHOLD = 0.25;
-        double ORANGE_THRESHOLD = 0.15;
-        double YELLOW_THRESHOLD = 0.5;
-        double CREAM_THRESHOLD = 0.0;
+    public int getLocationProbabilityColorRes(double maxProb){
+        double RED_THRESHOLD = maxProb;
+        double ORANGE_THRESHOLD = (maxProb/4)*3;
+        double YELLOW_THRESHOLD = (maxProb/4)*2;
+        double CREAM_THRESHOLD = (maxProb/4)*1;
 
         double locProb = super.getLocationProbability();
         if(locProb>=RED_THRESHOLD){

@@ -11,14 +11,14 @@ import android.os.Parcelable;
  * ScanResult no tiene un constructor público)
  *
  */
-public class Lecture implements Parcelable{
+public class Reading implements Parcelable{
 
     /**
      * ID of the lecture in the DataBase
      */
-    private long lectureId;
+    private long readingId;
     /**
-     * If the Lecture has been Empirically taken or Mathematically generated
+     * If the Reading has been Empirically taken or Mathematically generated
      */
     private boolean mathGenerated;
     /**
@@ -38,7 +38,7 @@ public class Lecture implements Parcelable{
      */
     private int frequency;
     /**
-     * The ID of the Sector this Lecture is attached to
+     * The ID of the Sector this Reading is attached to
      */
     private long sectorId;
     /**
@@ -46,28 +46,36 @@ public class Lecture implements Parcelable{
      * this result was last seen.
      */
     private long timestamp;
+    /**
+     * defines if this object must be deleted from the db
+     */
+    private boolean deleteDBEntity;
+    /**
+     * defines if this object is new a must be created on the db
+     */
+    private boolean newDBEntity = true;
 
-    public Lecture() {
+    public Reading() {
     }
-    public Lecture(ScanResult scanResult) {
+    public Reading(ScanResult scanResult) {
         this.mathGenerated = false;
         setScanResult(scanResult);
     }
 
-    public Lecture(ScanResult scanResult, long sectorId) {
+    public Reading(ScanResult scanResult, long sectorId) {
         this.mathGenerated = false;
         setScanResult(scanResult);
         this.sectorId = sectorId;
     }
 
-    public Lecture(ScanResult scanResult, long sectorId, long lectureId) {
+    public Reading(ScanResult scanResult, long sectorId, long readingId) {
         this.mathGenerated = false;
         setScanResult(scanResult);
         this.sectorId = sectorId;
-        this.lectureId = lectureId;
+        this.readingId = readingId;
     }
 
-    public Lecture(boolean mathGenerated, String BSSID, int level, int frequency, long sectorId, long timestamp) {
+    public Reading(boolean mathGenerated, String BSSID, int level, int frequency, long sectorId, long timestamp) {
         this.mathGenerated = mathGenerated;
         this.BSSID = BSSID;
         this.level = level;
@@ -76,13 +84,23 @@ public class Lecture implements Parcelable{
         this.timestamp = timestamp;
     }
 
-    public Lecture(long lectureId, boolean mathGenerated, String BSSID, int level, int frequency, long sectorId) {
-        this.lectureId = lectureId;
+    public Reading(long readingId, boolean mathGenerated, String BSSID, int level, int frequency, long sectorId) {
+        this.readingId = readingId;
         this.mathGenerated = mathGenerated;
         this.BSSID = BSSID;
         this.level = level;
         this.frequency = frequency;
         this.sectorId = sectorId;
+    }
+
+    public Reading(long readingId, boolean mathGenerated, String BSSID, int level, int frequency, long sectorId, long timestamp) {
+        this.readingId = readingId;
+        this.mathGenerated = mathGenerated;
+        this.BSSID = BSSID;
+        this.level = level;
+        this.frequency = frequency;
+        this.sectorId = sectorId;
+        this.timestamp = timestamp;
     }
 
     public void setScanResult(ScanResult scanResult) {
@@ -92,12 +110,12 @@ public class Lecture implements Parcelable{
         this.timestamp = scanResult.timestamp;
     }
 
-    public long getLectureId() {
-        return lectureId;
+    public long getReadingId() {
+        return readingId;
     }
 
-    public void setLectureId(long lectureId) {
-        this.lectureId = lectureId;
+    public void setReadingId(long readingId) {
+        this.readingId = readingId;
     }
 
     public boolean isMathGenerated() {
@@ -152,6 +170,22 @@ public class Lecture implements Parcelable{
         this.timestamp = timestamp;
     }
 
+    public boolean isDeleteDBEntity() {
+        return deleteDBEntity;
+    }
+
+    public void setDeleteDBEntity(boolean deleteDBEntity) {
+        this.deleteDBEntity = deleteDBEntity;
+    }
+
+    public boolean isNewDBEntity() {
+        return newDBEntity;
+    }
+
+    public void setNewDBEntity(boolean newDBEntity) {
+        this.newDBEntity = newDBEntity;
+    }
+
     // Parcelling part
 
     @Override
@@ -161,34 +195,38 @@ public class Lecture implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(lectureId);
+        dest.writeLong(readingId);
         dest.writeByte((byte) (mathGenerated ? 1 : 0));
         dest.writeString(BSSID);
         dest.writeInt(level);
         dest.writeInt(frequency);
         dest.writeLong(sectorId);
         dest.writeLong(timestamp);
+        dest.writeByte((byte) (deleteDBEntity ? 1 : 0));
+        dest.writeByte((byte) (newDBEntity ? 1 : 0));
     }
 
-    protected Lecture(Parcel in) {
-        lectureId = in.readLong();
+    protected Reading(Parcel in) {
+        readingId = in.readLong();
         mathGenerated = in.readByte() != 0;
         BSSID = in.readString();
         level = in.readInt();
         frequency = in.readInt();
         sectorId = in.readLong();
         timestamp = in.readLong();
+        deleteDBEntity = in.readByte() != 0;
+        newDBEntity = in.readByte() != 0;
     }
 
-    public static final Creator<Lecture> CREATOR = new Creator<Lecture>() {
+    public static final Creator<Reading> CREATOR = new Creator<Reading>() {
         @Override
-        public Lecture createFromParcel(Parcel in) {
-            return new Lecture(in);
+        public Reading createFromParcel(Parcel in) {
+            return new Reading(in);
         }
 
         @Override
-        public Lecture[] newArray(int size) {
-            return new Lecture[size];
+        public Reading[] newArray(int size) {
+            return new Reading[size];
         }
     };
 }

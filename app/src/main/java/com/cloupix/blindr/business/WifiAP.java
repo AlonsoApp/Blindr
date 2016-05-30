@@ -32,28 +32,28 @@ public class WifiAP implements Parcelable {
      */
     private String BSSID;
 
-    private ArrayList<Lecture> lectures;
+    private ArrayList<Reading> readings;
 
     public WifiAP() {
-        this.lectures = new ArrayList<Lecture>();
+        this.readings = new ArrayList<Reading>();
     }
 
     public WifiAP(String SSID, String BSSID) {
         this.SSID = SSID;
         this.BSSID = BSSID;
-        this.lectures = new ArrayList<Lecture>();
+        this.readings = new ArrayList<Reading>();
     }
 
-    public WifiAP(String SSID, String BSSID, ArrayList<Lecture> lectures) {
+    public WifiAP(String SSID, String BSSID, ArrayList<Reading> readings) {
         this.SSID = SSID;
         this.BSSID = BSSID;
-        this.lectures = lectures;
+        this.readings = readings;
     }
 
-    public WifiAP(String SSID, String BSSID, final Lecture lecture) {
+    public WifiAP(String SSID, String BSSID, final Reading reading) {
         this.SSID = SSID;
         this.BSSID = BSSID;
-        this.lectures = new ArrayList<Lecture>(){{add(lecture);}};
+        this.readings = new ArrayList<Reading>(){{add(reading);}};
     }
 
     public String getSSID() {
@@ -64,8 +64,8 @@ public class WifiAP implements Parcelable {
         return BSSID;
     }
 
-    public ArrayList<Lecture> getLectures() {
-        return lectures;
+    public ArrayList<Reading> getReadings() {
+        return readings;
     }
 
     public void setSSID(String ssid) {
@@ -76,22 +76,22 @@ public class WifiAP implements Parcelable {
         this.BSSID = BSSID;
     }
 
-    public void setLectures(ArrayList<Lecture> lectures) {
-        this.lectures = lectures;
+    public void setReadings(ArrayList<Reading> readings) {
+        this.readings = readings;
     }
 
-    public void addWifiAPLecture(Lecture lecture) {
-        lectures.add(lecture);
+    public void addWifiAPReading(Reading reading) {
+        readings.add(reading);
     }
 
-    public void addWifiAPLectures(ArrayList<Lecture> lectures) {
-        lectures.addAll(lectures);
+    public void addWifiAPReadings(ArrayList<Reading> readings) {
+        readings.addAll(readings);
     }
 
     public int getAverageRSSI(){
-        int[] levels = new int[lectures.size()];
-        for (int i = 0; i<lectures.size(); i++){
-            levels[i] = lectures.get(i).getLevel();
+        int[] levels = new int[readings.size()];
+        for (int i = 0; i< readings.size(); i++){
+            levels[i] = readings.get(i).getLevel();
         }
         // Si queremos quitar los valores más bajos y más altos de la media tendríamos que ordenar y
         // podar el array aqui
@@ -106,13 +106,13 @@ public class WifiAP implements Parcelable {
         HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
 
         // Ordenamos la lista
-        //Collections.sort(lectures, new WifiAPLectureComparator());
+        //Collections.sort(readings, new WifiAPLectureComparator());
 
-        for (Lecture lecture : lectures) {
-            if (map.containsKey(lecture.getLevel())) {
-                map.put(lecture.getLevel(), map.get(lecture.getLevel())+1);
+        for (Reading reading : readings) {
+            if (map.containsKey(reading.getLevel())) {
+                map.put(reading.getLevel(), map.get(reading.getLevel())+1);
             }else{
-                map.put(lecture.getLevel(), 1);
+                map.put(reading.getLevel(), 1);
             }
         }
 

@@ -3,9 +3,12 @@ package com.cloupix.blindr.ui.fragments;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.cloupix.blindr.R;
 import com.cloupix.blindr.business.SectorView;
@@ -19,6 +22,8 @@ public class EditSectorViewWallsFragment extends Fragment implements View.OnClic
     private View nStroke, eStroke, sStroke, wStroke, neswStroke, nwseStroke;
     //private ImageView imgViewCircle;
     //private TextView textViewApNumber;
+    private EditText editTextLatitude, editTextLongitude;
+
 
     private SectorView sectorView;
 
@@ -60,6 +65,8 @@ public class EditSectorViewWallsFragment extends Fragment implements View.OnClic
         nwseStroke = rootView.findViewById(R.id.nwseStroke);
         //imgViewCircle = (ImageView) rootView.findViewById(R.id.imgViewCircle);
         //textViewApNumber = (TextView) rootView.findViewById(R.id.textViewApNumber);
+        editTextLatitude = (EditText) rootView.findViewById(R.id.editTextLatitude);
+        editTextLongitude = (EditText) rootView.findViewById(R.id.editTextLongitude);
 
         nStroke.setOnClickListener(this);
         eStroke.setOnClickListener(this);
@@ -67,6 +74,35 @@ public class EditSectorViewWallsFragment extends Fragment implements View.OnClic
         wStroke.setOnClickListener(this);
         neswStroke.setOnClickListener(this);
         nwseStroke.setOnClickListener(this);
+
+        editTextLatitude.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                try{
+                    sectorView.setLatitude(Double.parseDouble(s.toString()));
+                }catch (Exception e){}
+            }
+        });
+        editTextLongitude.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                try {
+                    sectorView.setLongitude(Double.parseDouble(s.toString()));
+                }catch(Exception e){}
+            }
+        });
 
         updateViews();
     }
@@ -78,7 +114,8 @@ public class EditSectorViewWallsFragment extends Fragment implements View.OnClic
         wStroke.setBackgroundColor(getResources().getColor(sectorView.iswStroke()?R.color.wall_on:R.color.wall_off, null));
         neswStroke.setBackgroundColor(getResources().getColor(sectorView.isNeswStroke()?R.color.wall_on:R.color.wall_off, null));
         nwseStroke.setBackgroundColor(getResources().getColor(sectorView.isNwseStroke()?R.color.wall_on:R.color.wall_off, null));
-
+        editTextLatitude.setText(Double.toString(sectorView.getLatitude()));
+        editTextLongitude.setText(Double.toString(sectorView.getLongitude()));
     }
 
     @Override

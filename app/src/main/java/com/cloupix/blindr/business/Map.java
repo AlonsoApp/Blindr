@@ -90,6 +90,11 @@ public class Map {
         aSectors[index] = sector;
     }
 
+    public Sector getSector(int x, int y){
+        int index = x+(width*y);
+        return getSector(index);
+    }
+
     public void addSector(SectorView sectorView, int listN) {
         this.aSectors[listN] = sectorView;
     }
@@ -112,4 +117,22 @@ public class Map {
 
         return wifiAPsInMap;
     }
+
+    public Sector getSectorOfWifiAP(String bssid) {
+        for(Sector sector : aSectors)
+            for(WifiAP wifiAP : sector.getWifiAPs())
+                if(wifiAP.getBSSID().equals(bssid))
+                    return sector;
+        return null;
+    }
+
+    public double getMaxSectorProbability() {
+
+        double maxSectorProb = 0;
+        for(Sector sector : aSectors)
+            if(maxSectorProb<sector.getLocationProbability())
+                maxSectorProb = sector.getLocationProbability();
+        return maxSectorProb;
+    }
+
 }

@@ -23,9 +23,9 @@ public class WifiAPComparator implements Comparator {
         // - if o2 > o1
 
         // Los he invertido porque lo quiero d emayor a menor
-        if (wifiAP1.getLectures().get(wifiAP1.getLectures().size()-1).getLevel() > wifiAP2.getLectures().get(wifiAP2.getLectures().size()-1).getLevel()) {
+        if (wifiAP1.getReadings().get(wifiAP1.getReadings().size()-1).getLevel() > wifiAP2.getReadings().get(wifiAP2.getReadings().size()-1).getLevel()) {
             return -1;
-        }else if(wifiAP1.getLectures().get(wifiAP1.getLectures().size()-1).getLevel() < wifiAP2.getLectures().get(wifiAP2.getLectures().size()-1).getLevel()) {
+        }else if(wifiAP1.getReadings().get(wifiAP1.getReadings().size()-1).getLevel() < wifiAP2.getReadings().get(wifiAP2.getReadings().size()-1).getLevel()) {
             return 1;
         }else {
             return 0;

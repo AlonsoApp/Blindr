@@ -2,8 +2,8 @@ package com.cloupix.blindr.logic;
 
 import android.graphics.Color;
 
+import com.cloupix.blindr.business.Reading;
 import com.cloupix.blindr.business.WifiAP;
-import com.cloupix.blindr.business.Lecture;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -64,16 +64,16 @@ public class LineChartLogic extends ChartLogic {
 
         // Sacamos los valores de las x
         ArrayList<String> xVals = new ArrayList<String>();
-        for (Lecture lecture : wifiAp.getLectures()) {
+        for (Reading reading : wifiAp.getReadings()) {
 
-            xVals.add(lecture.getTimestamp() + "");
+            xVals.add(reading.getTimestamp() + "");
         }
 
         //Sacamos los valores de Y
         ArrayList<Entry> vals1 = new ArrayList<Entry>();
 
-        for (int i = 0; i < wifiAp.getLectures().size(); i++) {
-            vals1.add(new Entry(wifiAp.getLectures().get(i).getLevel(), i));
+        for (int i = 0; i < wifiAp.getReadings().size(); i++) {
+            vals1.add(new Entry(wifiAp.getReadings().get(i).getLevel(), i));
         }
 
         // create a dataset and give it a type

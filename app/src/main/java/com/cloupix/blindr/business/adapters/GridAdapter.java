@@ -6,14 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cloupix.blindr.R;
 import com.cloupix.blindr.business.Map;
 import com.cloupix.blindr.business.SectorView;
 import com.cloupix.blindr.business.SquareImageView;
+import com.cloupix.blindr.business.WifiAP;
 import com.cloupix.blindr.business.WifiAPView;
+
+import java.util.ArrayList;
 
 /**
  * Created by alonsousa on 15/12/15.
@@ -30,6 +32,8 @@ public class GridAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private Map map;
 
+    private double maxSectorProbability;
+
     private int viewMode;
 
 
@@ -39,6 +43,7 @@ public class GridAdapter extends BaseAdapter {
         this.map = map;
         this.mInflater = LayoutInflater.from(c);
         this.viewMode = viewMode;
+        //this.maxSectorProbability = map.getMaxSectorProbability();
 
     }
 
@@ -111,19 +116,20 @@ public class GridAdapter extends BaseAdapter {
             }
 
             // Visualización del (los) WifiAP(s) en el sector
-            if(sector.getWifiAPs().size()>0){
-                if(sector.getWifiAPs().size()>1){
+            ArrayList<WifiAP> nonDeletedWifiAPs = sector.getNonDeletedWifiAPs();
+            if(nonDeletedWifiAPs.size()>0){
+                if(nonDeletedWifiAPs.size()>1){
                     // Más de 1 AP
                     holder.imgViewCircle.setImageResource(WifiAPView.multipleAPCircleRes);
-                    String text = Integer.toString(((WifiAPView) sector.getWifiAPs().get(0)).getApNumber());
-                    for(int i = 1; i<sector.getWifiAPs().size(); i++){
-                        text += "," + ((WifiAPView) sector.getWifiAPs().get(i)).getApNumber();
+                    String text = Integer.toString(((WifiAPView) nonDeletedWifiAPs.get(0)).getApNumber());
+                    for(int i=1; i<nonDeletedWifiAPs.size(); i++){
+                        text += "," + ((WifiAPView) nonDeletedWifiAPs.get(i)).getApNumber();
                     }
                     holder.textViewApNumber.setText(text);
                 }else{
                     // 1 AP
-                    holder.imgViewCircle.setImageResource(((WifiAPView)sector.getWifiAPs().get(0)).getBackgroundCircleRes());
-                    holder.textViewApNumber.setText(Integer.toString(((WifiAPView)sector.getWifiAPs().get(0)).getApNumber()));
+                    holder.imgViewCircle.setImageResource(((WifiAPView)nonDeletedWifiAPs.get(0)).getBackgroundCircleRes());
+                    holder.textViewApNumber.setText(Integer.toString(((WifiAPView)nonDeletedWifiAPs.get(0)).getApNumber()));
                 }
                 holder.imgViewCircle.setVisibility(View.VISIBLE);
                 holder.textViewApNumber.setVisibility(View.VISIBLE);
@@ -142,11 +148,11 @@ public class GridAdapter extends BaseAdapter {
 
             switch (viewMode){
                 case MAPPING_MODE:
-                    int color = sector.hasLectures()? mContext.getColor(R.color.scanned):mContext.getColor(android.R.color.transparent);
+                    int color = sector.hasNonDeletedReadings()? mContext.getColor(R.color.scanned):mContext.getColor(android.R.color.transparent);
                     holder.imgViewSector.setBackgroundColor(color);
                     break;
                 case LOCATION_MODE:
-                    int color2 = mContext.getColor(sector.getLocationProbabilityColorRes());
+                    int color2 = mContext.getColor(sector.getLocationProbabilityColorRes(maxSectorProbability));
                     holder.imgViewSector.setBackgroundColor(color2);
                     holder.textViewProbability.setText(Double.toString(sector.getLocationProbability()));
                     break;
@@ -166,6 +172,12 @@ public class GridAdapter extends BaseAdapter {
         View nStroke, eStroke, sStroke, wStroke, nwseStroke, neswStroke;
         TextView textViewApNumber, textViewProbability;
         ImageView imgViewCircle;
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        this.maxSectorProbability = map.getMaxSectorProbability();
+        super.notifyDataSetChanged();
     }
 
     // Helpers

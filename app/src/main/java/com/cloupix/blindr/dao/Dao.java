@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.cloupix.blindr.business.Lecture;
 import com.cloupix.blindr.business.Map;
+import com.cloupix.blindr.business.Reading;
 import com.cloupix.blindr.business.Sector;
 import com.cloupix.blindr.business.SectorView;
 import com.cloupix.blindr.business.WifiAP;
@@ -128,20 +128,20 @@ public class Dao {
                 SQLiteDatabase.CONFLICT_REPLACE);
     }
 
-    public long insertLecture(Lecture lecture) {
+    public long insertReading(Reading reading) {
         if(database==null)
             return -1;
 
         //  Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(BlindrDbContract.Lecture.COLUMN_NAME_MATH_GENERATED, lecture.isMathGenerated());
-        values.put(BlindrDbContract.Lecture.COLUMN_NAME_BSSID, lecture.getBSSID());
-        values.put(BlindrDbContract.Lecture.COLUMN_NAME_LEVEL, lecture.getLevel());
-        values.put(BlindrDbContract.Lecture.COLUMN_NAME_FRENQUENCY, lecture.getFrequency());
-        values.put(BlindrDbContract.Lecture.COLUMN_NAME_TIMESTAMP, lecture.getTimestamp());
-        values.put(BlindrDbContract.Lecture.COLUMN_NAME_SECTOR_ID, lecture.getSectorId());
+        values.put(BlindrDbContract.Reading.COLUMN_NAME_MATH_GENERATED, reading.isMathGenerated());
+        values.put(BlindrDbContract.Reading.COLUMN_NAME_BSSID, reading.getBSSID());
+        values.put(BlindrDbContract.Reading.COLUMN_NAME_LEVEL, reading.getLevel());
+        values.put(BlindrDbContract.Reading.COLUMN_NAME_FRENQUENCY, reading.getFrequency());
+        values.put(BlindrDbContract.Reading.COLUMN_NAME_TIMESTAMP, reading.getTimestamp());
+        values.put(BlindrDbContract.Reading.COLUMN_NAME_SECTOR_ID, reading.getSectorId());
 
-        return database.insertWithOnConflict(BlindrDbContract.Lecture.TABLE_NAME, null, values,
+        return database.insertWithOnConflict(BlindrDbContract.Reading.TABLE_NAME, null, values,
                 SQLiteDatabase.CONFLICT_REPLACE);
     }
 
@@ -370,38 +370,38 @@ public class Dao {
         return list;
     }
 
-    public Lecture getLectureById(long lectureId) {
+    public Reading getReadingById(long readingId) {
         if(database==null)
             return null;
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] projection = {
-                BlindrDbContract.Lecture.COLUMN_NAME_LECTURE_ID,
-                BlindrDbContract.Lecture.COLUMN_NAME_MATH_GENERATED,
-                BlindrDbContract.Lecture.COLUMN_NAME_LEVEL,
-                BlindrDbContract.Lecture.COLUMN_NAME_FRENQUENCY,
-                BlindrDbContract.Lecture.COLUMN_NAME_TIMESTAMP,
-                BlindrDbContract.Lecture.COLUMN_NAME_SECTOR_ID,
-                BlindrDbContract.Lecture.COLUMN_NAME_BSSID
+                BlindrDbContract.Reading.COLUMN_NAME_READING_ID,
+                BlindrDbContract.Reading.COLUMN_NAME_MATH_GENERATED,
+                BlindrDbContract.Reading.COLUMN_NAME_LEVEL,
+                BlindrDbContract.Reading.COLUMN_NAME_FRENQUENCY,
+                BlindrDbContract.Reading.COLUMN_NAME_TIMESTAMP,
+                BlindrDbContract.Reading.COLUMN_NAME_SECTOR_ID,
+                BlindrDbContract.Reading.COLUMN_NAME_BSSID
         };
 
         // A filter declaring which rows to return, formatted as an SQL WHERE clause
         // (excluding the WHERE itself). Passing null will return all rows for the given table.
         String selection =
-                BlindrDbContract.Lecture.COLUMN_NAME_LECTURE_ID + "=?";
+                BlindrDbContract.Reading.COLUMN_NAME_READING_ID + "=?";
 
         // You may include ?s in selection, which will be replaced by the values from selectionArgs,
         // in order that they appear in the selection. The values will be bound as Strings.
         String[] selectionArgs = new String[]{
-                Long.toString(lectureId)
+                Long.toString(readingId)
         };
 
         // How you want the results sorted in the resulting Cursor
         //String sortOrder = FeedEntry.COLUMN_NAME_UPDATED + " DESC";
 
         Cursor c = database.query(
-                BlindrDbContract.Lecture.TABLE_NAME,       // The table to query
+                BlindrDbContract.Reading.TABLE_NAME,       // The table to query
                 projection,                               // The columns to return
                 selection,                                // The columns for the WHERE clause
                 selectionArgs,                            // The values for the WHERE clause
@@ -410,31 +410,31 @@ public class Dao {
                 null                                 // The sort order
         );
 
-        Lecture lecture = cursorToLecture(c);
+        com.cloupix.blindr.business.Reading reading = cursorToReading(c);
         c.close();
-        return lecture;
+        return reading;
     }
 
-    public ArrayList<Lecture> getLecturesBySectorId(long sectorId) {
+    public ArrayList<Reading> getReadingsBySectorId(long sectorId) {
         if(database==null)
             return null;
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] projection = {
-                BlindrDbContract.Lecture.COLUMN_NAME_LECTURE_ID,
-                BlindrDbContract.Lecture.COLUMN_NAME_MATH_GENERATED,
-                BlindrDbContract.Lecture.COLUMN_NAME_LEVEL,
-                BlindrDbContract.Lecture.COLUMN_NAME_FRENQUENCY,
-                BlindrDbContract.Lecture.COLUMN_NAME_TIMESTAMP,
-                BlindrDbContract.Lecture.COLUMN_NAME_SECTOR_ID,
-                BlindrDbContract.Lecture.COLUMN_NAME_BSSID
+                BlindrDbContract.Reading.COLUMN_NAME_READING_ID,
+                BlindrDbContract.Reading.COLUMN_NAME_MATH_GENERATED,
+                BlindrDbContract.Reading.COLUMN_NAME_LEVEL,
+                BlindrDbContract.Reading.COLUMN_NAME_FRENQUENCY,
+                BlindrDbContract.Reading.COLUMN_NAME_TIMESTAMP,
+                BlindrDbContract.Reading.COLUMN_NAME_SECTOR_ID,
+                BlindrDbContract.Reading.COLUMN_NAME_BSSID
         };
 
         // A filter declaring which rows to return, formatted as an SQL WHERE clause
         // (excluding the WHERE itself). Passing null will return all rows for the given table.
         String selection =
-                BlindrDbContract.Lecture.COLUMN_NAME_SECTOR_ID + "=?";
+                BlindrDbContract.Reading.COLUMN_NAME_SECTOR_ID + "=?";
 
         // You may include ?s in selection, which will be replaced by the values from selectionArgs,
         // in order that they appear in the selection. The values will be bound as Strings.
@@ -446,7 +446,7 @@ public class Dao {
         //String sortOrder = FeedEntry.COLUMN_NAME_UPDATED + " DESC";
 
         Cursor c = database.query(
-                BlindrDbContract.Lecture.TABLE_NAME,       // The table to query
+                BlindrDbContract.Reading.TABLE_NAME,       // The table to query
                 projection,                               // The columns to return
                 selection,                                // The columns for the WHERE clause
                 selectionArgs,                            // The values for the WHERE clause
@@ -455,7 +455,7 @@ public class Dao {
                 null                                 // The sort order
         );
 
-        ArrayList<Lecture> list = cursorToLectureList(c);
+        ArrayList<com.cloupix.blindr.business.Reading> list = cursorToReadingList(c);
         c.close();
         return list;
     }
@@ -498,6 +498,36 @@ public class Dao {
         WifiAP wifiAP = cursorToWifiAP(c);
         c.close();
         return wifiAP;
+    }
+
+    public ArrayList<WifiAPView> getWifiAPViews(){
+        if(database==null)
+            return null;
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                BlindrDbContract.WifiAPView.COLUMN_NAME_WIFI_AP_VIEW_ID,
+                BlindrDbContract.WifiAPView.COLUMN_NAME_BACKGROUND_CIRCLE,
+                BlindrDbContract.WifiAPView.COLUMN_NAME_AP_NUMBER,
+                BlindrDbContract.WifiAPView.COLUMN_NAME_WIFI_AP_SECTOR_ID
+        };
+        // How you want the results sorted in the resulting Cursor
+        //String sortOrder = FeedEntry.COLUMN_NAME_UPDATED + " DESC";
+
+        Cursor c = database.query(
+                BlindrDbContract.WifiAPView.TABLE_NAME,       // The table to query
+                projection,                               // The columns to return
+                null,                                // The columns for the WHERE clause
+                null,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+
+        ArrayList<WifiAPView> list = cursorToWifiAPViewList(c);
+        c.close();
+        return list;
     }
 
     public WifiAPView getWifiAPViewById(long wifiAPViewId) {
@@ -1036,41 +1066,41 @@ public class Dao {
         );
     }
 
-    public void deleteLectures(){
+    public void deleteReadings(){
 
         database.delete(
-                BlindrDbContract.Lecture.TABLE_NAME,
+                BlindrDbContract.Reading.TABLE_NAME,
                 null,
                 null
         );
     }
 
-    public void deleteLectureById(long lectureId) {
+    public void deleteReadingById(long readingId) {
 
         // A filter declaring which rows to return, formatted as an SQL WHERE clause
         // (excluding the WHERE itself). Passing null will return all rows for the given table.
         String selection =
-                BlindrDbContract.Lecture.COLUMN_NAME_LECTURE_ID + "=?";
+                BlindrDbContract.Reading.COLUMN_NAME_READING_ID + "=?";
 
         // You may include ?s in selection, which will be replaced by the values from selectionArgs,
         // in order that they appear in the selection. The values will be bound as Strings.
         String[] selectionArgs = new String[]{
-                Long.toString(lectureId)
+                Long.toString(readingId)
         };
 
         database.delete(
-                BlindrDbContract.Lecture.TABLE_NAME,
+                BlindrDbContract.Reading.TABLE_NAME,
                 selection,
                 selectionArgs
         );
     }
 
-    public void deleteLectureBySectorId(long sectorId) {
+    public void deleteReadingBySectorId(long sectorId) {
 
         // A filter declaring which rows to return, formatted as an SQL WHERE clause
         // (excluding the WHERE itself). Passing null will return all rows for the given table.
         String selection =
-                BlindrDbContract.Lecture.COLUMN_NAME_SECTOR_ID + "=?";
+                BlindrDbContract.Reading.COLUMN_NAME_SECTOR_ID + "=?";
 
         // You may include ?s in selection, which will be replaced by the values from selectionArgs,
         // in order that they appear in the selection. The values will be bound as Strings.
@@ -1079,7 +1109,7 @@ public class Dao {
         };
 
         database.delete(
-                BlindrDbContract.Lecture.TABLE_NAME,
+                BlindrDbContract.Reading.TABLE_NAME,
                 selection,
                 selectionArgs
         );
@@ -1123,7 +1153,7 @@ public class Dao {
         );
     }
 
-    public void deleteWifiAPById(long wifiAPViewId) {
+    public void deleteWifiAPViewById(long wifiAPViewId) {
 
         // A filter declaring which rows to return, formatted as an SQL WHERE clause
         // (excluding the WHERE itself). Passing null will return all rows for the given table.
@@ -1157,7 +1187,7 @@ public class Dao {
         // A filter declaring which rows to return, formatted as an SQL WHERE clause
         // (excluding the WHERE itself). Passing null will return all rows for the given table.
         String selection =
-                BlindrDbContract.WifiAPSector.COLUMN_NAME_SECTOR_ID + "=?";
+                BlindrDbContract.WifiAPSector.COLUMN_NAME_WIFI_AP_SECTOR_ID + "=?";
 
         // You may include ?s in selection, which will be replaced by the values from selectionArgs,
         // in order that they appear in the selection. The values will be bound as Strings.
@@ -1264,30 +1294,31 @@ public class Dao {
         return sector;
     }
 
-    private Lecture cursorToLecture(Cursor cursor){
+    private Reading cursorToReading(Cursor cursor){
         if(cursor.isBeforeFirst())
             cursor.moveToFirst();
         if(cursor.isAfterLast())
             return null;
 
-        Lecture lecture = new Lecture();
+        Reading reading = new com.cloupix.blindr.business.Reading();
 
-        lecture.setLectureId(cursor.getLong(
-                cursor.getColumnIndexOrThrow(BlindrDbContract.Lecture.COLUMN_NAME_LECTURE_ID)));
-        lecture.setMathGenerated(cursor.getInt(
-                cursor.getColumnIndexOrThrow(BlindrDbContract.Lecture.COLUMN_NAME_MATH_GENERATED)));
-        lecture.setLevel(cursor.getInt(
-                cursor.getColumnIndexOrThrow(BlindrDbContract.Lecture.COLUMN_NAME_LEVEL)));
-        lecture.setFrequency(cursor.getInt(
-                cursor.getColumnIndexOrThrow(BlindrDbContract.Lecture.COLUMN_NAME_FRENQUENCY)));
-        lecture.setTimestamp(cursor.getLong(
-                cursor.getColumnIndexOrThrow(BlindrDbContract.Lecture.COLUMN_NAME_TIMESTAMP)));
-        lecture.setBSSID(cursor.getString(
-                cursor.getColumnIndexOrThrow(BlindrDbContract.Lecture.COLUMN_NAME_BSSID)));
-        lecture.setSectorId(cursor.getLong(
-                cursor.getColumnIndexOrThrow(BlindrDbContract.Lecture.COLUMN_NAME_SECTOR_ID)));
+        reading.setReadingId(cursor.getLong(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.Reading.COLUMN_NAME_READING_ID)));
+        reading.setMathGenerated(cursor.getInt(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.Reading.COLUMN_NAME_MATH_GENERATED)));
+        reading.setLevel(cursor.getInt(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.Reading.COLUMN_NAME_LEVEL)));
+        reading.setFrequency(cursor.getInt(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.Reading.COLUMN_NAME_FRENQUENCY)));
+        reading.setTimestamp(cursor.getLong(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.Reading.COLUMN_NAME_TIMESTAMP)));
+        reading.setBSSID(cursor.getString(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.Reading.COLUMN_NAME_BSSID)));
+        reading.setSectorId(cursor.getLong(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.Reading.COLUMN_NAME_SECTOR_ID)));
+        reading.setNewDBEntity(false);
 
-        return lecture;
+        return reading;
     }
 
     private WifiAP cursorToWifiAP(Cursor cursor){
@@ -1320,6 +1351,9 @@ public class Dao {
                 cursor.getColumnIndexOrThrow(BlindrDbContract.WifiAPView.COLUMN_NAME_BACKGROUND_CIRCLE)));
         wifiAPView.setApNumber(cursor.getInt(
                 cursor.getColumnIndexOrThrow(BlindrDbContract.WifiAPView.COLUMN_NAME_AP_NUMBER)));
+        wifiAPView.setWifiAPSectorId(cursor.getLong(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.WifiAPView.COLUMN_NAME_WIFI_AP_SECTOR_ID)));
+        wifiAPView.setNewDBEntity(false);
 
         return wifiAPView;
     }
@@ -1393,11 +1427,11 @@ public class Dao {
         return arrayList;
     }
 
-    private ArrayList<Lecture> cursorToLectureList(Cursor cursor){
-        ArrayList<Lecture> arrayList = new ArrayList<>();
+    private ArrayList<com.cloupix.blindr.business.Reading> cursorToReadingList(Cursor cursor){
+        ArrayList<com.cloupix.blindr.business.Reading> arrayList = new ArrayList<>();
 
         while(cursor.moveToNext()){
-            arrayList.add(cursorToLecture(cursor));
+            arrayList.add(cursorToReading(cursor));
         }
 
         return arrayList;

@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.cloupix.blindr.R;
 import com.cloupix.blindr.business.SectorView;
@@ -41,6 +43,7 @@ public class MapBuilderFragment extends Fragment implements AdapterView.OnItemCl
     private FloatingActionButton fab;
     private EditText editTextName;
     private GridView gridView;
+    private ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +62,7 @@ public class MapBuilderFragment extends Fragment implements AdapterView.OnItemCl
         gridView = (GridView) rootView.findViewById(R.id.gridview);
         fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         fab.setOnClickListener(this);
+        progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
 
         gridAdapter = new GridAdapter(getContext(), map, GridAdapter.BUILD_MODE);
         gridView.setAdapter(gridAdapter);
@@ -90,6 +94,17 @@ public class MapBuilderFragment extends Fragment implements AdapterView.OnItemCl
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_generate_fingerprinting:
+                mapLogic.generateFingerprinting(getContext(), map, progressBar);
+                break;
+            case R.id.action_generate_latlong:
+                if(!map.getSector(0, map.getHeight()-1).hasLatLong()) {
+                    Toast.makeText(getContext(), getString(R.string.incomplete_latlong) + " 0," +
+                            (map.getHeight()-1), Toast.LENGTH_LONG).show();
+                    return true;
+                }
+                mapLogic.generateLatLong(getContext(), map);
+                return true;
             case R.id.action_save:
                 saveMap();
                 getActivity().onBackPressed();

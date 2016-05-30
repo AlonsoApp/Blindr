@@ -1,7 +1,9 @@
 package com.cloupix.blindr.ui.fragments;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.wifi.ScanResult;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,17 +24,13 @@ import android.widget.Toast;
 
 import com.cloupix.blindr.R;
 import com.cloupix.blindr.business.Map;
-import com.cloupix.blindr.business.Sector;
 import com.cloupix.blindr.business.adapters.GridAdapter;
-import com.cloupix.blindr.business.Lecture;
-import com.cloupix.blindr.business.adapters.MapSpinnerAdapter;
-import com.cloupix.blindr.logic.Compare;
+import com.cloupix.blindr.business.Reading;
 import com.cloupix.blindr.logic.LocationLogic;
 import com.cloupix.blindr.logic.MapLogic;
 import com.cloupix.blindr.logic.WifiLogic;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -40,16 +38,17 @@ import java.util.List;
  * Created by alonsousa on 15/12/15.
  *
  */
-public class FingerprintingFragment extends Fragment implements AdapterView.OnItemClickListener, WifiLogic.WifiLogicScannCallbacks, View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class FingerprintingFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, WifiLogic.WifiLogicScannCallbacks, View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     public static final String ARG_MAP_ID = "map_id";
+    private final int READINGS_PER_LOC = 2; // Numero de lecturas antes de predecir la loc
 
     private GridAdapter gridAdapter;
     private GridView gridView;
     private ProgressBar scanProgressBar;
     private Spinner spinner;
 
-    private int lecturesPerScan = 5;
+    private int lecturesPerScan = 8;
     private int currentMode;
 
     private WifiLogic wifiLogic;
@@ -61,6 +60,9 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
     private ArrayList<Map> mapEmptyList;
     private ArrayAdapter<String> mapSpinnerAdapter;
     private FingerprintingFragmentCallbacks mCallbacks;
+
+    private ArrayList<Reading> readingGroup = new ArrayList<>();
+    private int contReadings = 0;
 
 
     @Override
@@ -117,6 +119,8 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
         if (wifiLogic !=null)
             wifiLogic.stopScan();
         if(map!=null) {
+            mapLogic.saveMap(map, getContext());
+            /* Quitamos el thread por problemas de sincronización
             new AsyncTask<Void, Void, Void>() {
 
                 @Override
@@ -133,6 +137,7 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
                         Toast.makeText(context, R.string.map_saved, Toast.LENGTH_SHORT).show();
                 }
             }.execute();
+            */
         }
     }
 
@@ -177,6 +182,7 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
         fab.setOnClickListener(this);
 
         gridView.setOnItemClickListener(this);
+        gridView.setOnItemLongClickListener(this);
 
         scanProgressBar = (ProgressBar) rootView.findViewById(R.id.scanProgressBar);
         scanProgressBar.setMax(lecturesPerScan);
@@ -248,14 +254,32 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
         if(wifiLogic == null)
             wifiLogic = new WifiLogic(getActivity());
 
-        // Limpiamos las lectures anteriores del sector
-        map.getaSectors()[position].getLectures().clear();
+        // Limpiamos las lectures anteriores del sector UPDATED: Ya no, ahora las concatenamos
+        //map.getaSectors()[position].getReadings().clear();
         scanProgressBar.setVisibility(View.VISIBLE);
         wifiLogic.startScan(this, lecturesPerScan);
 
 
     }
 
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(R.string.alert_clear_sector_title);
+        builder.setMessage(R.string.alert_clear_sector_msg);
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                for(Reading reading : map.getSector(position).getReadings())
+                    reading.setDeleteDBEntity(true);
+                //map.getSector(position).getReadings().clear();
+                gridAdapter.notifyDataSetChanged();
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, null);
+        builder.show();
+        return true;
+    }
 
     @Override
     public void onReceive(List<ScanResult> results, int loopCounter) {
@@ -285,26 +309,25 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
     public void addScanResultList(List<ScanResult> scanResultList) {
 
         for(ScanResult scanResult : scanResultList){
-            map.getaSectors()[scanningSectorN].getLectures().add(new Lecture(scanResult, map.getaSectors()[scanningSectorN].getSectorId()));
+            map.getaSectors()[scanningSectorN].getReadings().add(new Reading(scanResult, map.getaSectors()[scanningSectorN].getSectorId()));
         }
 
     }
 
     public void updateSectorLocationProbabilities(List<ScanResult> results){
-        ArrayList<Lecture> lectures = new ArrayList<>();
-
         for(ScanResult scanResult : results)
-            lectures.add(new Lecture(scanResult));
+            readingGroup.add(new Reading(scanResult));
 
-        LocationLogic locationLogic = new LocationLogic();
-        locationLogic.getSectorProbabilities(map, lectures);
-        /*
-        Compare compare = new Compare();
-        /** Este 4 significa el numero de sectores poximos. TODO actualizar esto para que no se necesite (trabajod e Ale) *
-        Sector[] probSectors = compare.getNearestSectors(newLectures, map, 4);
-        map.addLocationProbabilitySectors(probSectors);
-        */
-        gridAdapter.notifyDataSetChanged();
+        if(contReadings >= READINGS_PER_LOC){
+            LocationLogic locationLogic = new LocationLogic();
+            locationLogic.getSectorProbabilities(map, readingGroup);
+            readingGroup.clear();
+            contReadings = 0;
+            gridAdapter.notifyDataSetChanged();
+        }
+
+        contReadings = contReadings + 1;
+
     }
 
     @Override

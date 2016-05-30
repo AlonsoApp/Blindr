@@ -52,12 +52,12 @@ public class WifiListFragment extends ListFragment implements WifiLogic.WifiLogi
         super.onResume();
 
         /*
-        listAdapter.addWifiAP(new WifiAP("Drama", "MC2", new ArrayList<Lecture>() {{
-            add(new Lecture(-20));
+        listAdapter.addWifiAP(new WifiAP("Drama", "MC2", new ArrayList<Reading>() {{
+            add(new Reading(-20));
         }}));
-        listAdapter.addWifiAP(new WifiAP("Zarrator", "MC3", new ArrayList<Lecture>(){{ add(new Lecture(-30));}}));
-        listAdapter.addWifiAP(new WifiAP("Alatzas", "MC4", new ArrayList<Lecture>(){{ add(new Lecture(-40));}}));
-        listAdapter.addWifiAP(new WifiAP("Ludee", "MC5", new ArrayList<Lecture>(){{ add(new Lecture(-50));}}));
+        listAdapter.addWifiAP(new WifiAP("Zarrator", "MC3", new ArrayList<Reading>(){{ add(new Reading(-30));}}));
+        listAdapter.addWifiAP(new WifiAP("Alatzas", "MC4", new ArrayList<Reading>(){{ add(new Reading(-40));}}));
+        listAdapter.addWifiAP(new WifiAP("Ludee", "MC5", new ArrayList<Reading>(){{ add(new Reading(-50));}}));
         listAdapter.notifyDataSetChanged();
         */
 

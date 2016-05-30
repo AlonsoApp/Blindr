@@ -20,18 +20,20 @@ public class Sector implements Parcelable {
     private long mapId;
     private double locationProbability;
 
-    ArrayList<Lecture> lectures;
+    ArrayList<Reading> readings;
     ArrayList<WifiAP> wifiAPs;
 
 
 
     public Sector() {
-        this.lectures = new ArrayList<>();
+        this.readings = new ArrayList<>();
         this.wifiAPs = new ArrayList<>();
     }
 
     public Sector(long sectorId){
         this.sectorId = sectorId;
+        this.readings = new ArrayList<>();
+        this.wifiAPs = new ArrayList<>();
     }
 
     public Sector(int listN, int matrixX, int matrixY, double latitude, double longitude, long mapId) {
@@ -41,6 +43,8 @@ public class Sector implements Parcelable {
         this.latitude = latitude;
         this.longitude = longitude;
         this.mapId = mapId;
+        this.readings = new ArrayList<>();
+        this.wifiAPs = new ArrayList<>();
     }
 
     public Sector(long sectorId, int listN, int matrixX, int matrixY, double latitude, double longitude, long mapId) {
@@ -51,7 +55,7 @@ public class Sector implements Parcelable {
         this.latitude = latitude;
         this.longitude = longitude;
         this.mapId = mapId;
-        this.lectures = new ArrayList<>();
+        this.readings = new ArrayList<>();
         this.wifiAPs = new ArrayList<>();
     }
 
@@ -113,12 +117,12 @@ public class Sector implements Parcelable {
         this.mapId = mapId;
     }
 
-    public ArrayList<Lecture> getLectures() {
-        return lectures;
+    public ArrayList<Reading> getReadings() {
+        return readings;
     }
 
-    public void setLectures(ArrayList<Lecture> lectures) {
-        this.lectures = lectures;
+    public void setReadings(ArrayList<Reading> readings) {
+        this.readings = readings;
     }
 
     public ArrayList<WifiAP> getWifiAPs() {
@@ -129,10 +133,30 @@ public class Sector implements Parcelable {
         this.wifiAPs = wifiAPs;
     }
 
-    public boolean hasLectures(){
-        if(this.lectures == null)
+    public boolean hasReadings(){
+        if(this.readings == null)
             return false;
-        return !this.lectures.isEmpty();
+        return !this.readings.isEmpty();
+    }
+
+    public boolean hasNonDeletedReadings() {
+        if(!hasReadings())
+            return false;
+        for(Reading reading : readings)
+            if(!reading.isDeleteDBEntity())
+                return true;
+        return false;
+    }
+
+    public ArrayList<WifiAP> getNonDeletedWifiAPs() {
+        ArrayList<WifiAP> nonDeletedWifiAPs = new ArrayList<>();
+        for(WifiAP wifiAP : wifiAPs){
+            if(wifiAP instanceof WifiAPView){
+                if(!((WifiAPView) wifiAP).isDeleteDBEntity())
+                    nonDeletedWifiAPs.add(wifiAP);
+            }
+        }
+        return nonDeletedWifiAPs;
     }
 
     @Override
@@ -154,7 +178,7 @@ public class Sector implements Parcelable {
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
         dest.writeLong(mapId);
-        dest.writeList(lectures);
+        dest.writeList(readings);
         dest.writeList(wifiAPs);
     }
 
@@ -166,7 +190,7 @@ public class Sector implements Parcelable {
         latitude = in.readDouble();
         longitude = in.readDouble();
         mapId = in.readLong();
-        lectures = in.readArrayList(getClass().getClassLoader());
+        readings = in.readArrayList(getClass().getClassLoader());
         wifiAPs = in.readArrayList(getClass().getClassLoader());
     }
 
@@ -188,5 +212,10 @@ public class Sector implements Parcelable {
 
     public void setLocationProbability(double locationProbability) {
         this.locationProbability = locationProbability;
+    }
+
+    public boolean hasLatLong() {
+        //TODO Esto no está del todo bien, poner un valor -1 a los lat long que no tengan valor que comprobar con eso
+        return latitude!=0 && longitude!=0;
     }
 }
