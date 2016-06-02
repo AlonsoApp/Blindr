@@ -257,8 +257,8 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
                         currentMode = GridAdapter.MAPPING_MODE;
                         break;
                     default:
-                        MapLogic mapLogic = new MapLogic();
-                        mapLogic.compareMathGeneratedReadings(map);
+                        LocationLogic locationLogic = new LocationLogic();
+                        locationLogic.compareMathGeneratedReadings(map);
                         gridAdapter.setViewMode(GridAdapter.COMPARE_MODE);
                         gridAdapter.notifyDataSetChanged();
                         currentMode = GridAdapter.COMPARE_MODE;
@@ -305,9 +305,7 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                for(Reading reading : map.getSector(position).getReadings(Sector.ALL_READINGS))
-                    reading.setDeleteDBEntity(true);
-                //map.getSector(position).getReadings().clear();
+                map.getSector(position).deleteReadings(Sector.ALL_READINGS);
                 gridAdapter.notifyDataSetChanged();
             }
         });

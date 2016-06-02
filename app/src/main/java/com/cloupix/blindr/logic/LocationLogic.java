@@ -25,7 +25,7 @@ public class LocationLogic {
         HashMap<String, Double>[] mapWithAverageValues = getAverageValuesArray(templateWithValues);
 
         for(Sector sector : map.getaSectors()){
-            HashMap<String, ArrayList<Integer>> readingsWithValues = getWifiAPLevelHashMapFromReadings(sector.getReadings(Sector.MATH_GENERATED_READINGS));
+            HashMap<String, ArrayList<Integer>> readingsWithValues = getWifiAPLevelHashMapFromReadings(sector.getNonDeletedReadings(Sector.MATH_GENERATED_READINGS));
             HashMap<String, ArrayList<Integer>> curatedReadingsWithValues = deleteReadingsFromWifiAPsNotInMap(readingsWithValues, wifiAPsInMap);
             HashMap<String, Double> readingsWithAverageValues = getAverageValueHashMap(curatedReadingsWithValues);
             double euclideanDistance = getEuclideanDistance(mapWithAverageValues[sector.getListN()], readingsWithAverageValues);
@@ -105,7 +105,7 @@ public class LocationLogic {
         for(int i=0; i<result.length; i++)
             result[i] = new HashMap<>();
         for(Sector sector : map.getaSectors()){
-            for(final Reading reading : sector.getReadings(readingType)) {
+            for(final Reading reading : sector.getNonDeletedReadings(readingType)) {
                 // Descartamso als lecturas que no estén en la plantilla
                 if(template.containsKey(reading.getBSSID())){
                     if (!result[sector.getListN()].containsKey(reading.getBSSID()))
@@ -251,7 +251,7 @@ public class LocationLogic {
         double sum = 0;
         for(java.util.Map.Entry<String, Double> entry: sectorHashMap.entrySet()){
             if(readings.containsKey(entry.getKey()))
-                sum += Math.pow(entry.getValue() - readings.get(entry.getKey()), 2);
+                sum += Math.pow(entry.getValue() - (readings.get(entry.getKey())), 2);
             // (else) Aqui meteríamos qué hacer si en readings no hay un valor asociado a ese bssid -100
         }
         return Math.sqrt(sum);

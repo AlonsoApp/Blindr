@@ -41,7 +41,7 @@ public class MapBuilderFragment extends Fragment implements AdapterView.OnItemCl
     private GridAdapter gridAdapter;
 
     private FloatingActionButton fab;
-    private EditText editTextName;
+    private EditText editTextName, editTextMapFrameworkMapId;
     private GridView gridView;
     private ProgressBar progressBar;
 
@@ -59,6 +59,7 @@ public class MapBuilderFragment extends Fragment implements AdapterView.OnItemCl
 
         editTextName = (EditText) rootView.findViewById(R.id.editTextName);
         editTextName.setText("");
+        editTextMapFrameworkMapId = (EditText) rootView.findViewById(R.id.editTextMapFrameworkMapId);
         gridView = (GridView) rootView.findViewById(R.id.gridview);
         fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         fab.setOnClickListener(this);
@@ -120,15 +121,19 @@ public class MapBuilderFragment extends Fragment implements AdapterView.OnItemCl
     public void onResume() {
         super.onResume();
         getActivity().setTitle(R.string.fragment_title_builder);
-        if(map!=null && editTextName !=null)
+        if(map!=null && editTextName !=null) {
             editTextName.setText(map.getName());
-        else if(editTextName !=null)
+            editTextMapFrameworkMapId.setText(map.getMapFrameworkMapId());
+        } else if(editTextName !=null) {
             editTextName.setText("");
+            editTextMapFrameworkMapId.setText("");
+        }
     }
 
     private void loadMap(long mapId){
         map = mapLogic.getMapById(mapId, getContext());
         editTextName.setText(map.getName());
+        editTextMapFrameworkMapId.setText(map.getMapFrameworkMapId());
         gridView.setNumColumns(map.getWidth());
         gridAdapter.setMap(map);
         gridAdapter.notifyDataSetChanged();
@@ -178,6 +183,7 @@ public class MapBuilderFragment extends Fragment implements AdapterView.OnItemCl
 
     private void saveMap(){
         map.setName(editTextName.getText().toString());
+        map.setMapFrameworkMapId(editTextMapFrameworkMapId.getText().toString());
         mapLogic.saveMap(map, getContext());
     }
 

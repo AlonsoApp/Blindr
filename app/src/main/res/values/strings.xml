@@ -39,4 +39,5 @@
     <string name="all_readings">All</string>
     <string name="alert_select_location_mode">Location Mode</string>
     <string name="alert_select_location_mode_msg">Which kind of readings do you whant for the location process?</string>
+    <string name="map_framework_map_id">ID</string>
 </resources>

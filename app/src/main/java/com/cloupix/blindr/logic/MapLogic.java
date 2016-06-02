@@ -2,6 +2,7 @@ package com.cloupix.blindr.logic;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -26,6 +27,8 @@ import java.util.Iterator;
  *
  */
 public class MapLogic {
+
+    private CommunicationManagerTCP cmTCP;
 
     public long createMap(String name, int height, int width, Context context) {
         long mapId = -1;
@@ -272,11 +275,13 @@ public class MapLogic {
             @Override
             protected Boolean doInBackground(Void... params) {
                 try{
+                    map.deleteReadings(Sector.MATH_GENERATED_READINGS);
+                    cmTCP = new CommunicationManagerTCP(SERVER_IP, SERVER_PORT);
                     for(int i =0; i<map.getMapWifiAPs().size(); i++){
                         WifiAP wifiAP = map.getMapWifiAPs().get(i);
                         Sector wifiAPSector = map.getSectorOfWifiAP(wifiAP.getBSSID());
                         for(int j=0; j<map.getaSectors().length; j++){
-                            publishProgress((i+1)*(j+1));
+                            publishProgress(i*map.getaSectors().length+(j+1));
 
                             Sector currentSector = map.getaSectors()[j];
                             Double predictedLevel = getPredictedLevel(wifiAPSector.getLongitude(),
@@ -292,6 +297,7 @@ public class MapLogic {
                             currentSector.getReadings().add(reading);
                         }
                     }
+                    cmTCP.desconectar();
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -310,7 +316,7 @@ public class MapLogic {
     private double getPredictedLevel(double wifiAPSectorLongitude, double wifiAPSectorLatitude,
                                      double currentSectorLongitude, double currentSectorLatitude) throws Exception {
 
-        return cost(wifiAPSectorLatitude, wifiAPSectorLongitude, currentSectorLatitude, currentSectorLongitude);
+        return cost(wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude)*-1;
     }
 
     /**
@@ -323,7 +329,7 @@ public class MapLogic {
     private static final double REF_DISTANCE = 1.0;
     private static final double N_CORRIDOR = 1.2;
 
-    private static final String SERVER_IP = "";
+    private static final String SERVER_IP = "10.10.10.169";
     private static final int SERVER_PORT = 1170;
 
     // TODO Para desharcodear este valor, preguntar al usuario que tipo de entorno es, pasillo, oficina... hacer research para sacar los valores para los diferentes entornos
@@ -332,7 +338,12 @@ public class MapLogic {
     // COST 231 Multi Wall
     private double cost(double wifiAPSectorLongitude, double wifiAPSectorLatitude,
                         double currentSectorLongitude, double currentSectorLatitude) throws Exception {
-        double logDistanceValue = logDistance(getDistance(wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude));
+        double distance = getDistance(wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude);
+        // Si la distancia es menor que la distancia de REF calculamos directamente el freeSpacePathLoss
+        if(distance<REF_DISTANCE)
+            return freeSpacePathLoss(distance);
+
+        double logDistanceValue = logDistance(distance);
         double numFloors = 0.0; // Number of floors
         double genericFloorLossFactor = 0.0; // Floor loss factor (a generic value for all the floors)
         double b = 0.0; // No tengo muy claro que es esto. Mirar doc
@@ -347,32 +358,36 @@ public class MapLogic {
     }
 
     private double logDistance(double distance){
-        double pl0 = pathLossAtRef();
+        if(distance<REF_DISTANCE) {
+
+            return freeSpacePathLoss(distance);
+        }
+        double pl0 = freeSpacePathLoss(REF_DISTANCE);
         double x0 = 0.0;
 
         return pl0 + 10*N*Math.log10(distance/REF_DISTANCE)+x0;
     }
 
-    private double pathLossAtRef(){
-        return 20 * Math.log10(FREQUENCY_MHZ) - 28;
+    private double freeSpacePathLoss(double distance){
+        // L(d0)[dB] = 20log(d)+20log(f)-147,55
+        distance = distance==0?0.5:distance;
+        return 20*Math.log10(distance)+20*Math.log10((long)FREQUENCY_MHZ*1000000) - 147.55;
+        //return 20 * Math.log10(FREQUENCY_MHZ) - 28;
     }
 
     private ArrayList<Double> getWallLossFactors(double wifiAPSectorLongitude, double wifiAPSectorLatitude,
                                         double currentSectorLongitude, double currentSectorLatitude) throws Exception {
 
-        CommunicationManagerTCP cmTCP = new CommunicationManagerTCP(SERVER_IP, SERVER_PORT);
-        ArrayList<Double> result = cmTCP.getWallLossFactors(wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude);
-
-
-        return result;
+        if(cmTCP!=null)
+         return cmTCP.getWallLossFactors(wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude);
+        else
+            return new ArrayList<>();
     }
 
     private double getDistance(double x0, double y0, double x1, double y1){
-        return 5.0;
-        //return Math.sqrt(Math.pow((x1-x0), 2)+Math.pow((y1-y0), 2));
-    }
-
-    public void compareMathGeneratedReadings(Map map) {
-
+        if(x0==x1 && y0==x1)
+            return 0;
+        else
+            return Math.sqrt(Math.pow((x1-x0), 2)+Math.pow((y1-y0), 2));
     }
 }

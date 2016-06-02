@@ -19,6 +19,7 @@ public class BlindrDbContract {
 
         public static final String TABLE_NAME = "map";
         public static final String COLUMN_NAME_MAP_ID = "map_id";
+        public static final String COLUMN_NAME_MAP_FRAMEWORK_MAP_ID = "map_framework_map_id";
         public static final String COLUMN_NAME_NAME = "name";
         public static final String COLUMN_NAME_HEIGHT = "height";
         public static final String COLUMN_NAME_WIDTH = "width";
@@ -100,6 +101,7 @@ public class BlindrDbContract {
     public static final String SQL_CREATE_TABLE_MAP =
             "CREATE TABLE " + Map.TABLE_NAME + " (" +
                     Map.COLUMN_NAME_MAP_ID + INTEGER_TYPE + " PRIMARY KEY AUTOINCREMENT" + COMMA_SEP +
+                    Map.COLUMN_NAME_MAP_FRAMEWORK_MAP_ID + TEXT_TYPE + COMMA_SEP +
                     Map.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP +
                     Map.COLUMN_NAME_HEIGHT + INTEGER_TYPE + COMMA_SEP +
                     Map.COLUMN_NAME_WIDTH + INTEGER_TYPE + COMMA_SEP +

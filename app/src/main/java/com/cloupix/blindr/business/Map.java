@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class Map {
 
     private long mapId;
+    private String mapFrameworkMapId;
     private String name;
     private int height;
     private int width;
@@ -44,6 +45,14 @@ public class Map {
 
     public void setMapId(long mapId) {
         this.mapId = mapId;
+    }
+
+    public void setMapFrameworkMapId(String mapFrameworkMapId) {
+        this.mapFrameworkMapId = mapFrameworkMapId;
+    }
+
+    public String getMapFrameworkMapId() {
+        return mapFrameworkMapId;
     }
 
     public String getName() {
@@ -133,5 +142,11 @@ public class Map {
             if(maxSectorProb<sector.getLocationProbability())
                 maxSectorProb = sector.getLocationProbability();
         return maxSectorProb;
+    }
+
+    public void deleteReadings(int typeOfReadings) {
+        for(Sector sector : aSectors){
+            sector.deleteReadings(typeOfReadings);
+        }
     }
 }

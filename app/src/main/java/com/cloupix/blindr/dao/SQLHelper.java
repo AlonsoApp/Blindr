@@ -12,7 +12,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
     public static final String DATABASE_NAME = "blindr.db";
 
 
@@ -34,6 +34,9 @@ public class SQLHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         if(oldVersion==3){
+
+            db.execSQL("ALTER TABLE map ADD COLUMN map_framework_map_id TEXT DEFAULT ''");
+            oldVersion++;
             /*
             //create temp. table to hold data Aqui usamos el la variable SQL_CREATE_TABLE_MAP antigua (de la v3) y la ponemos aqui con el nombre Map.TABLE_NAME+"_tmp
             db.execSQL("CREATE TEMPORARY TABLE "+BlindrDbContract.Map.TABLE_NAME+"_tmp (_id INTEGER PRIMARY KEY AUTOINCREMENT, column_1 TEXT, column_2 TEXT);");
@@ -50,12 +53,10 @@ public class SQLHelper extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE map_backup");
             oldVersion++;
             */
-        }
-        if(oldVersion==4){
-            // Aqui aplicamos lo cambios de la 4 a la 5
-            oldVersion++;
+
         }
 
+        /*
         // Esto se va fuera con lo de abajo
         db.execSQL(BlindrDbContract.SQL_DELETE_TABLE_WIFI_AP_SECTOR);
         db.execSQL(BlindrDbContract.SQL_DELETE_TABLE_WIFI_AP_VIEW);
@@ -65,5 +66,6 @@ public class SQLHelper extends SQLiteOpenHelper {
         db.execSQL(BlindrDbContract.SQL_DELETE_TABLE_WIFI_AP);
         db.execSQL(BlindrDbContract.SQL_DELETE_TABLE_MAP);
         onCreate(db);
+        */
     }
 }

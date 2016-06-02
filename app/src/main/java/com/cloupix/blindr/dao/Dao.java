@@ -103,6 +103,7 @@ public class Dao {
 
         //  Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
+        values.put(BlindrDbContract.Map.COLUMN_NAME_MAP_FRAMEWORK_MAP_ID, map.getMapFrameworkMapId());
         values.put(BlindrDbContract.Map.COLUMN_NAME_NAME, map.getName());
         values.put(BlindrDbContract.Map.COLUMN_NAME_HEIGHT, map.getHeight());
         values.put(BlindrDbContract.Map.COLUMN_NAME_WIDTH, map.getWidth());
@@ -216,6 +217,7 @@ public class Dao {
         // you will actually use after this query.
         String[] projection = {
                 BlindrDbContract.Map.COLUMN_NAME_MAP_ID,
+                BlindrDbContract.Map.COLUMN_NAME_MAP_FRAMEWORK_MAP_ID,
                 BlindrDbContract.Map.COLUMN_NAME_NAME,
                 BlindrDbContract.Map.COLUMN_NAME_HEIGHT,
                 BlindrDbContract.Map.COLUMN_NAME_WIDTH
@@ -246,6 +248,7 @@ public class Dao {
         // you will actually use after this query.
         String[] projection = {
                 BlindrDbContract.Map.COLUMN_NAME_MAP_ID,
+                BlindrDbContract.Map.COLUMN_NAME_MAP_FRAMEWORK_MAP_ID,
                 BlindrDbContract.Map.COLUMN_NAME_NAME,
                 BlindrDbContract.Map.COLUMN_NAME_HEIGHT,
                 BlindrDbContract.Map.COLUMN_NAME_WIDTH
@@ -842,6 +845,7 @@ public class Dao {
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
+        values.put(BlindrDbContract.Map.COLUMN_NAME_MAP_FRAMEWORK_MAP_ID, map.getMapFrameworkMapId());
         values.put(BlindrDbContract.Map.COLUMN_NAME_NAME, map.getName());
         values.put(BlindrDbContract.Map.COLUMN_NAME_HEIGHT, map.getHeight());
         values.put(BlindrDbContract.Map.COLUMN_NAME_WIDTH, map.getWidth());
@@ -1256,6 +1260,8 @@ public class Dao {
 
         map.setMapId(cursor.getLong(
                 cursor.getColumnIndexOrThrow(BlindrDbContract.Map.COLUMN_NAME_MAP_ID)));
+        map.setMapFrameworkMapId(cursor.getString(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.Map.COLUMN_NAME_MAP_FRAMEWORK_MAP_ID)));
         map.setName(cursor.getString(
                 cursor.getColumnIndexOrThrow(BlindrDbContract.Map.COLUMN_NAME_NAME)));
         map.setHeight(cursor.getInt(

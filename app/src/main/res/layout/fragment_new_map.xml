@@ -24,16 +24,30 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin">
 
-        <EditText
-            android:id="@+id/editTextName"
+        <LinearLayout
+            android:id="@+id/layoutName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textCapSentences"
-            android:hint="@string/map_name"/>
+            android:orientation="horizontal">
+            <EditText
+                android:id="@+id/editTextName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="60"
+                android:inputType="textCapSentences"
+                android:hint="@string/map_name"/>
+
+            <EditText
+                android:id="@+id/editTextMapFrameworkMapId"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="40"
+                android:hint="@string/map_framework_map_id"/>
+        </LinearLayout>
 
         <GridView
             android:id="@+id/gridview"
-            android:layout_below="@+id/editTextName"
+            android:layout_below="@+id/layoutName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"

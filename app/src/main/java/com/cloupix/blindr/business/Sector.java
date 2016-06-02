@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by alonsousa on 15/12/15.
@@ -250,5 +251,47 @@ public class Sector implements Parcelable {
             if(!reading.isMathGenerated())
                 mathGeneratedReadings.add(reading);
         return mathGeneratedReadings;
+    }
+
+    public void deleteReadings(int typeOfReadings) {
+        switch (typeOfReadings){
+            case ALL_READINGS:
+                for(Reading reading : readings)
+                    reading.setDeleteDBEntity(true);
+                break;
+            case MAPPED_READINGS:
+                for(Reading reading : readings)
+                    if(!reading.isMathGenerated())
+                        reading.setDeleteDBEntity(true);
+                break;
+            case MATH_GENERATED_READINGS:
+                for(Reading reading : readings)
+                    if(reading.isMathGenerated())
+                        reading.setDeleteDBEntity(true);
+                break;
+        }
+    }
+
+    public ArrayList<Reading> getNonDeletedReadings(int readingType) {
+        ArrayList<Reading> resultReadings;
+        switch (readingType){
+            case MATH_GENERATED_READINGS:
+                resultReadings = getMathGeneratedReadings();
+                break;
+            case MAPPED_READINGS:
+                resultReadings = getMappedReadings();
+                break;
+            case ALL_READINGS:
+                resultReadings = readings;
+                break;
+            default:
+                resultReadings = readings;
+        }
+        for(Iterator<Reading> it = resultReadings.iterator(); it.hasNext(); ){
+            Reading reading = it.next();
+            if(reading.isDeleteDBEntity())
+                it.remove();
+        }
+        return resultReadings;
     }
 }

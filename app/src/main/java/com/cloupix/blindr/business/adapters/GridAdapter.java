@@ -15,6 +15,8 @@ import com.cloupix.blindr.business.SquareImageView;
 import com.cloupix.blindr.business.WifiAP;
 import com.cloupix.blindr.business.WifiAPView;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 /**
@@ -156,12 +158,12 @@ public class GridAdapter extends BaseAdapter {
                 case LOCATION_MODE:
                     int color2 = mContext.getColor(sector.getLocationProbabilityColorRes(maxSectorProbability));
                     holder.imgViewSector.setBackgroundColor(color2);
-                    holder.textViewProbability.setText(Double.toString(sector.getLocationProbability()));
+                    holder.textViewProbability.setText(Double.toString(round(sector.getLocationProbability(), 3)));
                     holder.textViewProbability.setVisibility(View.VISIBLE);
                     break;
                 case COMPARE_MODE:
                     holder.imgViewSector.setBackgroundColor(mContext.getColor(android.R.color.transparent));
-                    holder.textViewProbability.setText(Double.toString(sector.getLocationProbability()));
+                    holder.textViewProbability.setText(Double.toString(round(sector.getLocationProbability(), 2)));
                     holder.textViewProbability.setVisibility(View.VISIBLE);
                     break;
             }
@@ -200,5 +202,20 @@ public class GridAdapter extends BaseAdapter {
 
     public void setMap(Map map){
         this.map = map;
+    }
+
+    /**
+     * Metodo temporatl para recortar decimales
+     * TODO Debería estar en otro lado
+     * @param value
+     * @param places
+     * @return
+     */
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }
