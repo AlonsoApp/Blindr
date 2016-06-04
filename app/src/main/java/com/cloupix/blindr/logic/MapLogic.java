@@ -2,7 +2,6 @@ package com.cloupix.blindr.logic;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -17,8 +16,6 @@ import com.cloupix.blindr.business.WifiAPView;
 import com.cloupix.blindr.dao.Dao;
 import com.cloupix.blindr.logic.network.CommunicationManagerTCP;
 
-import java.io.IOException;
-import java.security.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -276,7 +273,8 @@ public class MapLogic {
             protected Boolean doInBackground(Void... params) {
                 try{
                     map.deleteReadings(Sector.MATH_GENERATED_READINGS);
-                    cmTCP = new CommunicationManagerTCP(SERVER_IP, SERVER_PORT);
+                    cmTCP = new CommunicationManagerTCP();
+                    cmTCP.open();
                     for(int i =0; i<map.getMapWifiAPs().size(); i++){
                         WifiAP wifiAP = map.getMapWifiAPs().get(i);
                         Sector wifiAPSector = map.getSectorOfWifiAP(wifiAP.getBSSID());
@@ -284,7 +282,7 @@ public class MapLogic {
                             publishProgress(i*map.getaSectors().length+(j+1));
 
                             Sector currentSector = map.getaSectors()[j];
-                            Double predictedLevel = getPredictedLevel(wifiAPSector.getLongitude(),
+                            Double predictedLevel = getPredictedLevel(map.getMapFrameworkMapId(),wifiAPSector.getLongitude(),
                                     wifiAPSector.getLatitude(), currentSector.getLongitude(),
                                     currentSector.getLatitude());
                             Reading reading = new Reading(
@@ -297,7 +295,7 @@ public class MapLogic {
                             currentSector.getReadings().add(reading);
                         }
                     }
-                    cmTCP.desconectar();
+                    cmTCP.close();
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -313,10 +311,10 @@ public class MapLogic {
         }.execute();
     }
 
-    private double getPredictedLevel(double wifiAPSectorLongitude, double wifiAPSectorLatitude,
+    private double getPredictedLevel(String mapFrameworkMapId, double wifiAPSectorLongitude, double wifiAPSectorLatitude,
                                      double currentSectorLongitude, double currentSectorLatitude) throws Exception {
 
-        return cost(wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude)*-1;
+        return cost(mapFrameworkMapId, wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude)*-1;
     }
 
     /**
@@ -327,16 +325,13 @@ public class MapLogic {
     // TODO Desharcodear todos estos valores y hacerlo un poco más cientifico
     private static final int FREQUENCY_MHZ = 2400;
     private static final double REF_DISTANCE = 1.0;
-    private static final double N_CORRIDOR = 1.2;
-
-    private static final String SERVER_IP = "10.10.10.169";
-    private static final int SERVER_PORT = 1170;
+    private static final double N_CORRIDOR = 1.4;
 
     // TODO Para desharcodear este valor, preguntar al usuario que tipo de entorno es, pasillo, oficina... hacer research para sacar los valores para los diferentes entornos
     private static final double N = N_CORRIDOR;
 
     // COST 231 Multi Wall
-    private double cost(double wifiAPSectorLongitude, double wifiAPSectorLatitude,
+    private double cost(String mapFrameworkMapId, double wifiAPSectorLongitude, double wifiAPSectorLatitude,
                         double currentSectorLongitude, double currentSectorLatitude) throws Exception {
         double distance = getDistance(wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude);
         // Si la distancia es menor que la distancia de REF calculamos directamente el freeSpacePathLoss
@@ -350,7 +345,7 @@ public class MapLogic {
         double nFExp = numFloors>0.0 ? (((genericFloorLossFactor-2)/(genericFloorLossFactor+1))-b) : 0.0; // No se si es -2 o +2
         double floorLoss = genericFloorLossFactor * Math.pow(numFloors, nFExp);
         double pathLoss = logDistanceValue + floorLoss;
-        ArrayList<Double> wallLossFactors = getWallLossFactors(wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude);
+        ArrayList<Double> wallLossFactors = getWallLossFactors(mapFrameworkMapId, wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude);
         for (double wallLossFactor :  wallLossFactors) {
             pathLoss += wallLossFactor;
         }
@@ -375,11 +370,11 @@ public class MapLogic {
         //return 20 * Math.log10(FREQUENCY_MHZ) - 28;
     }
 
-    private ArrayList<Double> getWallLossFactors(double wifiAPSectorLongitude, double wifiAPSectorLatitude,
+    private ArrayList<Double> getWallLossFactors(String mapFrameworkMapId, double wifiAPSectorLongitude, double wifiAPSectorLatitude,
                                         double currentSectorLongitude, double currentSectorLatitude) throws Exception {
 
         if(cmTCP!=null)
-         return cmTCP.getWallLossFactors(wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude);
+         return cmTCP.getWallLossFactors(mapFrameworkMapId, wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude);
         else
             return new ArrayList<>();
     }

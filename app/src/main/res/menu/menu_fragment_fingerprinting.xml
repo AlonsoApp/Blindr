@@ -3,6 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_score"
+        android:title="@string/action_score"
+        app:showAsAction="ifRoom"
+        />
+    <item
         android:id="@+id/action_compare_mode"
         android:title="@string/action_compare_mode"
         app:showAsAction="ifRoom"

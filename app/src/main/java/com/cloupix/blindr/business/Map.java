@@ -13,6 +13,7 @@ public class Map {
     private String name;
     private int height;
     private int width;
+    private double pathlossExponent;
 
     private Sector[] aSectors;
 
@@ -104,6 +105,14 @@ public class Map {
         return getSector(index);
     }
 
+    public double getPathlossExponent() {
+        return pathlossExponent;
+    }
+
+    public void setPathlossExponent(double pathlossExponent) {
+        this.pathlossExponent = pathlossExponent;
+    }
+
     public void addSector(SectorView sectorView, int listN) {
         this.aSectors[listN] = sectorView;
     }
@@ -148,5 +157,27 @@ public class Map {
         for(Sector sector : aSectors){
             sector.deleteReadings(typeOfReadings);
         }
+    }
+
+    public double getScore() {
+        double score = 0;
+        int nNonCeroProbSectors = 0;
+        for(Sector sector:aSectors) {
+            score = score + sector.getLocationProbability();
+            if(sector.getLocationProbability()>0)
+                nNonCeroProbSectors+=1;
+        }
+        return score/(nNonCeroProbSectors+1);
+    }
+
+    public Sector getMaxProbabilitySector() {
+        double maxSectorProb = 0;
+        Sector resultSector = null;
+        for(Sector sector : aSectors)
+            if(maxSectorProb<sector.getLocationProbability()){
+                maxSectorProb = sector.getLocationProbability();
+                resultSector = sector;
+            }
+        return resultSector;
     }
 }

@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.cloupix.blindr.R;
 import com.cloupix.blindr.business.Map;
+import com.cloupix.blindr.business.Sector;
 import com.cloupix.blindr.business.SectorView;
 import com.cloupix.blindr.business.SquareImageView;
 import com.cloupix.blindr.business.WifiAP;
@@ -151,7 +152,7 @@ public class GridAdapter extends BaseAdapter {
 
             switch (viewMode){
                 case MAPPING_MODE:
-                    int color = sector.hasNonDeletedReadings()? mContext.getColor(R.color.scanned):mContext.getColor(android.R.color.transparent);
+                    int color = sector.getNonDeletedReadings(Sector.MAPPED_READINGS).size()>0? mContext.getColor(R.color.scanned):mContext.getColor(android.R.color.transparent);
                     holder.imgViewSector.setBackgroundColor(color);
                     holder.textViewProbability.setVisibility(View.INVISIBLE);
                     break;

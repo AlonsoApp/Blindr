@@ -23,6 +23,7 @@ public class BlindrDbContract {
         public static final String COLUMN_NAME_NAME = "name";
         public static final String COLUMN_NAME_HEIGHT = "height";
         public static final String COLUMN_NAME_WIDTH = "width";
+        public static final String COLUMN_NAME_PATHLOSS_EXPONENT = "pathloss_exponent";
     }
 
     public static abstract class Sector implements BaseColumns {
@@ -105,6 +106,7 @@ public class BlindrDbContract {
                     Map.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP +
                     Map.COLUMN_NAME_HEIGHT + INTEGER_TYPE + COMMA_SEP +
                     Map.COLUMN_NAME_WIDTH + INTEGER_TYPE + COMMA_SEP +
+                    Map.COLUMN_NAME_PATHLOSS_EXPONENT + REAL_TYPE + COMMA_SEP +
                     " UNIQUE (" + Map.COLUMN_NAME_MAP_ID + ") ON CONFLICT REPLACE" +
                     " );";
     public static final String SQL_CREATE_TABLE_SECTOR =

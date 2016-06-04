@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.cloupix.blindr.R;
 import com.cloupix.blindr.business.Map;
@@ -264,6 +265,10 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
                         currentMode = GridAdapter.COMPARE_MODE;
                 }
                 break;
+            case R.id.action_score:
+                double score = map.getScore();
+                Toast.makeText(getContext(), "Score: "+score, Toast.LENGTH_LONG).show();
+                break;
             default:
                 break;
         }
@@ -365,6 +370,7 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
         if(contReadings >= READINGS_PER_LOC){
             LocationLogic locationLogic = new LocationLogic();
             locationLogic.getSectorProbabilities(map, readingGroup, currentLocationReadingType);
+            locationLogic.sendResultPosition(map.getMaxProbabilitySector());
             readingGroup.clear();
             contReadings = 0;
             gridAdapter.notifyDataSetChanged();

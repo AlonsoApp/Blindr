@@ -12,7 +12,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 4;
+    public static final int DATABASE_VERSION = 5;
     public static final String DATABASE_NAME = "blindr.db";
 
 
@@ -54,6 +54,10 @@ public class SQLHelper extends SQLiteOpenHelper {
             oldVersion++;
             */
 
+        }
+        if(oldVersion==4){
+            db.execSQL("ALTER TABLE map ADD COLUMN pathloss_exponent REAL DEFAULT 1.2");
+            oldVersion++;
         }
 
         /*

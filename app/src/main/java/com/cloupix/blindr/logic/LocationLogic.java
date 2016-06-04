@@ -1,9 +1,12 @@
 package com.cloupix.blindr.logic;
 
+import android.os.AsyncTask;
+
 import com.cloupix.blindr.business.Reading;
 import com.cloupix.blindr.business.Map;
 import com.cloupix.blindr.business.Sector;
 import com.cloupix.blindr.business.WifiAP;
+import com.cloupix.blindr.logic.network.CommunicationManagerTCP;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 
@@ -369,5 +372,26 @@ public class LocationLogic {
 
         */
 
+    }
+
+    public void sendResultPosition(Sector maxProbabilitySector) {
+        if(maxProbabilitySector==null)
+            return;
+        new AsyncTask<Sector, Void, Void>(){
+
+            @Override
+            protected Void doInBackground(Sector... params) {
+                try{
+                    Sector sector = params[0];
+                    CommunicationManagerTCP cmTCP = new CommunicationManagerTCP();
+                    cmTCP.open();
+                    cmTCP.sendResultPosition(sector.getLongitude(), sector.getLatitude(), System.currentTimeMillis());
+                    cmTCP.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }.execute(maxProbabilitySector);
     }
 }

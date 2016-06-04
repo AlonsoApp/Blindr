@@ -30,10 +30,18 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <EditText
+                android:id="@+id/editTextN"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="10"
+                android:inputType="numberDecimal"
+                android:hint="@string/pathloss_exponent"/>
+
+            <EditText
                 android:id="@+id/editTextName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="60"
+                android:layout_weight="50"
                 android:inputType="textCapSentences"
                 android:hint="@string/map_name"/>
 

@@ -41,7 +41,7 @@ public class MapBuilderFragment extends Fragment implements AdapterView.OnItemCl
     private GridAdapter gridAdapter;
 
     private FloatingActionButton fab;
-    private EditText editTextName, editTextMapFrameworkMapId;
+    private EditText editTextName, editTextMapFrameworkMapId, editTextN;
     private GridView gridView;
     private ProgressBar progressBar;
 
@@ -58,8 +58,11 @@ public class MapBuilderFragment extends Fragment implements AdapterView.OnItemCl
         View rootView = inflater.inflate(R.layout.fragment_new_map, container, false);
 
         editTextName = (EditText) rootView.findViewById(R.id.editTextName);
-        editTextName.setText("");
         editTextMapFrameworkMapId = (EditText) rootView.findViewById(R.id.editTextMapFrameworkMapId);
+        editTextN = (EditText) rootView.findViewById(R.id.editTextN);
+        editTextName.setText("");
+        editTextMapFrameworkMapId.setText("");
+        editTextN.setText("");
         gridView = (GridView) rootView.findViewById(R.id.gridview);
         fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         fab.setOnClickListener(this);
@@ -96,6 +99,8 @@ public class MapBuilderFragment extends Fragment implements AdapterView.OnItemCl
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_generate_fingerprinting:
+                map.setMapFrameworkMapId(editTextMapFrameworkMapId.getText().toString());
+                map.setPathlossExponent(Double.parseDouble(editTextN.getText().toString()));
                 mapLogic.generateFingerprinting(getContext(), map, progressBar);
                 break;
             case R.id.action_generate_latlong:
@@ -121,12 +126,14 @@ public class MapBuilderFragment extends Fragment implements AdapterView.OnItemCl
     public void onResume() {
         super.onResume();
         getActivity().setTitle(R.string.fragment_title_builder);
-        if(map!=null && editTextName !=null) {
+        if(map!=null && editTextName !=null && editTextN!=null) {
             editTextName.setText(map.getName());
             editTextMapFrameworkMapId.setText(map.getMapFrameworkMapId());
-        } else if(editTextName !=null) {
+            editTextN.setText(Double.toString(map.getPathlossExponent()));
+        } else if(editTextName !=null && editTextMapFrameworkMapId!=null && editTextN!=null) {
             editTextName.setText("");
             editTextMapFrameworkMapId.setText("");
+            editTextN.setText("");
         }
     }
 
@@ -134,6 +141,7 @@ public class MapBuilderFragment extends Fragment implements AdapterView.OnItemCl
         map = mapLogic.getMapById(mapId, getContext());
         editTextName.setText(map.getName());
         editTextMapFrameworkMapId.setText(map.getMapFrameworkMapId());
+        editTextN.setText(Double.toString(map.getPathlossExponent()));
         gridView.setNumColumns(map.getWidth());
         gridAdapter.setMap(map);
         gridAdapter.notifyDataSetChanged();
@@ -184,6 +192,7 @@ public class MapBuilderFragment extends Fragment implements AdapterView.OnItemCl
     private void saveMap(){
         map.setName(editTextName.getText().toString());
         map.setMapFrameworkMapId(editTextMapFrameworkMapId.getText().toString());
+        map.setPathlossExponent(Double.parseDouble(editTextN.getText().toString()));
         mapLogic.saveMap(map, getContext());
     }
 

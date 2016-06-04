@@ -107,6 +107,7 @@ public class Dao {
         values.put(BlindrDbContract.Map.COLUMN_NAME_NAME, map.getName());
         values.put(BlindrDbContract.Map.COLUMN_NAME_HEIGHT, map.getHeight());
         values.put(BlindrDbContract.Map.COLUMN_NAME_WIDTH, map.getWidth());
+        values.put(BlindrDbContract.Map.COLUMN_NAME_PATHLOSS_EXPONENT, map.getPathlossExponent());
 
         return database.insertWithOnConflict(BlindrDbContract.Map.TABLE_NAME, null, values,
                 SQLiteDatabase.CONFLICT_REPLACE);
@@ -220,7 +221,8 @@ public class Dao {
                 BlindrDbContract.Map.COLUMN_NAME_MAP_FRAMEWORK_MAP_ID,
                 BlindrDbContract.Map.COLUMN_NAME_NAME,
                 BlindrDbContract.Map.COLUMN_NAME_HEIGHT,
-                BlindrDbContract.Map.COLUMN_NAME_WIDTH
+                BlindrDbContract.Map.COLUMN_NAME_WIDTH,
+                BlindrDbContract.Map.COLUMN_NAME_PATHLOSS_EXPONENT
         };
         // How you want the results sorted in the resulting Cursor
         //String sortOrder = FeedEntry.COLUMN_NAME_UPDATED + " DESC";
@@ -251,7 +253,8 @@ public class Dao {
                 BlindrDbContract.Map.COLUMN_NAME_MAP_FRAMEWORK_MAP_ID,
                 BlindrDbContract.Map.COLUMN_NAME_NAME,
                 BlindrDbContract.Map.COLUMN_NAME_HEIGHT,
-                BlindrDbContract.Map.COLUMN_NAME_WIDTH
+                BlindrDbContract.Map.COLUMN_NAME_WIDTH,
+                BlindrDbContract.Map.COLUMN_NAME_PATHLOSS_EXPONENT
         };
 
         // A filter declaring which rows to return, formatted as an SQL WHERE clause
@@ -849,6 +852,7 @@ public class Dao {
         values.put(BlindrDbContract.Map.COLUMN_NAME_NAME, map.getName());
         values.put(BlindrDbContract.Map.COLUMN_NAME_HEIGHT, map.getHeight());
         values.put(BlindrDbContract.Map.COLUMN_NAME_WIDTH, map.getWidth());
+        values.put(BlindrDbContract.Map.COLUMN_NAME_PATHLOSS_EXPONENT, map.getPathlossExponent());
 
         // A filter declaring which rows to return, formatted as an SQL WHERE clause
         // (excluding the WHERE itself). Passing null will return all rows for the given table.
@@ -1268,6 +1272,8 @@ public class Dao {
                 cursor.getColumnIndexOrThrow(BlindrDbContract.Map.COLUMN_NAME_HEIGHT)));
         map.setWidth(cursor.getInt(
                 cursor.getColumnIndexOrThrow(BlindrDbContract.Map.COLUMN_NAME_WIDTH)));
+        map.setPathlossExponent(cursor.getDouble(
+                cursor.getColumnIndexOrThrow(BlindrDbContract.Map.COLUMN_NAME_PATHLOSS_EXPONENT)));
 
         return map;
     }
@@ -1433,7 +1439,7 @@ public class Dao {
         return arrayList;
     }
 
-    private ArrayList<com.cloupix.blindr.business.Reading> cursorToReadingList(Cursor cursor){
+    private ArrayList<Reading> cursorToReadingList(Cursor cursor){
         ArrayList<com.cloupix.blindr.business.Reading> arrayList = new ArrayList<>();
 
         while(cursor.moveToNext()){
