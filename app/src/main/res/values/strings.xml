@@ -42,4 +42,5 @@
     <string name="map_framework_map_id">ID</string>
     <string name="action_score">SCORE</string>
     <string name="pathloss_exponent">N</string>
+    <string name="action_record_test">Record test</string>
 </resources>

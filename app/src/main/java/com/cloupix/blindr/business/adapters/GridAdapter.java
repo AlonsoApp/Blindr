@@ -30,6 +30,7 @@ public class GridAdapter extends BaseAdapter {
     public static final int BUILD_MODE = 1;
     public static final int MAPPING_MODE = 2;
     public static final int COMPARE_MODE = 3;
+    public static final int RECORD_TEST_MODE = 4;
 
     private Context mContext;
 
@@ -156,6 +157,7 @@ public class GridAdapter extends BaseAdapter {
                     holder.imgViewSector.setBackgroundColor(color);
                     holder.textViewProbability.setVisibility(View.INVISIBLE);
                     break;
+                case RECORD_TEST_MODE:
                 case LOCATION_MODE:
                     int color2 = mContext.getColor(sector.getLocationProbabilityColorRes(maxSectorProbability));
                     holder.imgViewSector.setBackgroundColor(color2);

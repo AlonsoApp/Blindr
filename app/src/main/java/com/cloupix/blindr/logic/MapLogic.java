@@ -253,6 +253,15 @@ public class MapLogic {
         Toast.makeText(context, R.string.completed_latlong, Toast.LENGTH_SHORT).show();
     }
 
+
+
+    // TODO Desharcodear todos estos valores y hacerlo un poco más cientifico
+    private static final int FREQUENCY_MHZ = 2400;
+    private static final double REF_DISTANCE = 1.0;
+    private static final double N_CORRIDOR = 1.2;
+
+    private double pathlossExponent;
+
     public void generateFingerprinting(final Context context, final Map map, final ProgressBar progressBar) {
         new AsyncTask<Void, Integer, Boolean>(){
             @Override
@@ -273,6 +282,7 @@ public class MapLogic {
             protected Boolean doInBackground(Void... params) {
                 try{
                     map.deleteReadings(Sector.MATH_GENERATED_READINGS);
+                    pathlossExponent = map.getPathlossExponent();
                     cmTCP = new CommunicationManagerTCP();
                     cmTCP.open();
                     for(int i =0; i<map.getMapWifiAPs().size(); i++){
@@ -314,21 +324,13 @@ public class MapLogic {
     private double getPredictedLevel(String mapFrameworkMapId, double wifiAPSectorLongitude, double wifiAPSectorLatitude,
                                      double currentSectorLongitude, double currentSectorLatitude) throws Exception {
 
-        return cost(mapFrameworkMapId, wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude)*-1;
+        return motleyKeenan(mapFrameworkMapId, wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude)*-1;
     }
 
     /**
      * To_do esto de aqui abajo podría sacarse a una clase externa
      * son métodos del/los modelos
      */
-
-    // TODO Desharcodear todos estos valores y hacerlo un poco más cientifico
-    private static final int FREQUENCY_MHZ = 2400;
-    private static final double REF_DISTANCE = 1.0;
-    private static final double N_CORRIDOR = 1.4;
-
-    // TODO Para desharcodear este valor, preguntar al usuario que tipo de entorno es, pasillo, oficina... hacer research para sacar los valores para los diferentes entornos
-    private static final double N = N_CORRIDOR;
 
     // COST 231 Multi Wall
     private double cost(String mapFrameworkMapId, double wifiAPSectorLongitude, double wifiAPSectorLatitude,
@@ -352,6 +354,29 @@ public class MapLogic {
         return pathLoss;
     }
 
+    // Motley Keenan Model
+    private double motleyKeenan(String mapFrameworkMapId, double wifiAPSectorLongitude, double wifiAPSectorLatitude,
+                                double currentSectorLongitude, double currentSectorLatitude) throws Exception{
+        double distance = getDistance(wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude);
+        // Si la distancia es menor que la distancia de REF calculamos directamente el freeSpacePathLoss
+        if(distance<REF_DISTANCE)
+            return freeSpacePathLoss(distance);
+
+        double logDistanceValue = logDistance(distance);
+        double pathLoss = logDistanceValue;
+        // Walls
+        ArrayList<Double> wallLossFactors = getWallLossFactors(mapFrameworkMapId, wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude);
+        for (double wallLossFactor :  wallLossFactors) {
+            pathLoss += wallLossFactor;
+        }
+        // Floors
+        ArrayList<Double> floorLossFactors = getFloorLossFactors();
+        for (double floorLossFactor :  floorLossFactors) {
+            pathLoss += floorLossFactor;
+        }
+        return pathLoss;
+    }
+
     private double logDistance(double distance){
         if(distance<REF_DISTANCE) {
 
@@ -360,7 +385,7 @@ public class MapLogic {
         double pl0 = freeSpacePathLoss(REF_DISTANCE);
         double x0 = 0.0;
 
-        return pl0 + 10*N*Math.log10(distance/REF_DISTANCE)+x0;
+        return pl0 + 10* pathlossExponent *Math.log10(distance/REF_DISTANCE)+x0;
     }
 
     private double freeSpacePathLoss(double distance){
@@ -374,9 +399,14 @@ public class MapLogic {
                                         double currentSectorLongitude, double currentSectorLatitude) throws Exception {
 
         if(cmTCP!=null)
-         return cmTCP.getWallLossFactors(mapFrameworkMapId, wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude);
+            return cmTCP.getWallLossFactors(mapFrameworkMapId, wifiAPSectorLongitude, wifiAPSectorLatitude, currentSectorLongitude, currentSectorLatitude);
         else
             return new ArrayList<>();
+    }
+
+    private ArrayList<Double> getFloorLossFactors() {
+        // The Map Framework doesn't support 3D mapping yet so there's no floor info :(
+        return new ArrayList<>();
     }
 
     private double getDistance(double x0, double y0, double x1, double y1){

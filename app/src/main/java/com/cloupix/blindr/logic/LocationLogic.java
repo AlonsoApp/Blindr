@@ -286,12 +286,12 @@ public class LocationLogic {
             // Restamos prob por que el readings no hay un valor que si hay en sector
             for(java.util.Map.Entry<String, Double> entry: sectorHashMapArray[i].entrySet()){
                 if(!readings.containsKey(entry.getKey()))
-                    correctedProbArray[i] = correctedProbArray[i] - (1.0/sectorHashMapArray[i].size());
+                    correctedProbArray[i] = correctedProbArray[i] - (probabilityArray[i] * 1.0/sectorHashMapArray[i].size());
             }
             // Restamos prob por que en sector no hay un valor que si hay en readings
             for(java.util.Map.Entry<String, Double> entry: readings.entrySet()){
                 if(!sectorHashMapArray[i].containsKey(entry.getKey()))
-                    correctedProbArray[i] = correctedProbArray[i] - (1.0/readings.size());
+                    correctedProbArray[i] = correctedProbArray[i] - (probabilityArray[i] * 1.0/readings.size());
             }
         }
         return correctedProbArray;
@@ -299,78 +299,37 @@ public class LocationLogic {
 
     private void applyProbabilityToSectors(Map map, double[] probablilityArray){
 
+        int distanceNearToPrevious = 2;
+        double nearProbMultiplier = 3;
 
-        for(int i =0; i<map.getaSectors().length; i++)
-            map.getaSectors()[i].setLocationProbability(probablilityArray[i]);
-
-
-        /*
-
-        Sector previousProbSector = new Sector();
-
-        double[] probablilityArray2 = probablilityArray;
-        double mayor = 0;
-        int posMayor = 0;
-        for (int j = 0; j<probablilityArray2.length; j++){
-            if (probablilityArray2[j] > mayor){
-                mayor = probablilityArray2[j];
-                posMayor = j;
+        double highestProbability = 0;
+        int highestProbabilityPosition = 0;
+        for (int j = 0; j<map.getaSectors().length; j++){
+            if (map.getaSectors()[j].getLocationProbability() > highestProbability){
+                highestProbability = map.getaSectors()[j].getLocationProbability();
+                highestProbabilityPosition = j;
             }
         }
 
+        Sector previousProbSector = map.getaSectors()[highestProbabilityPosition];
 
         for(int i =0; i<map.getaSectors().length; i++)
             map.getaSectors()[i].setLocationProbability(probablilityArray[i]);
 
 
-        ArrayList<Sector> sectorsWithProb = new ArrayList<Sector>();
-        ArrayList<Sector> mostProbSectors = new ArrayList<Sector>();
-        ArrayList<Sector> filteredMostProbSectors = new ArrayList<>();
-        double highestProb = 0;
-        int highestPosition = 0;
-        if (previousProbSector.getReadings().size() != 0){
+        if (previousProbSector.getListN() != 0){
 
-
-            //Meter todos los sectores del mapa con la probabilidad
-            for (int i =0; i<map.getaSectors().length; i++){
-                sectorsWithProb.add(map.getaSectors()[i]);
-            }
-
-            //Seleccionar los 5 sectores con mayor prob y meterlos a mostProbSectors
-            while (mostProbSectors.size() <= 5){
-                for (int j = 0; j<sectorsWithProb.size(); j++){
-                    if (sectorsWithProb.get(j).getLocationProbability() > highestProb){
-                        highestProb = sectorsWithProb.get(j).getLocationProbability();
-                        highestPosition = j;
-                    }
-                }
-                mostProbSectors.add(sectorsWithProb.get(highestPosition));
-                sectorsWithProb.get(highestPosition).setLocationProbability(0);
-            }
-
-            for(int z=0; z <mostProbSectors.size(); z++){
+            for(int z=0; z <map.getaSectors().length; z++){
                 double physicalDistance = 0;
-                physicalDistance = Math.pow((mostProbSectors.get(z).getMatrixX() - previousProbSector.getMatrixX()), 2)
-                        + Math.pow((mostProbSectors.get(z).getMatrixY() - previousProbSector.getMatrixY()), 2);
+                physicalDistance = Math.pow((map.getaSectors()[z].getMatrixX() - previousProbSector.getMatrixX()), 2)
+                        + Math.pow((map.getaSectors()[z].getMatrixY() - previousProbSector.getMatrixY()), 2);
                 physicalDistance = Math.sqrt(physicalDistance);
 
-                if (physicalDistance <= 1){
-                    filteredMostProbSectors.add(mostProbSectors.get(z));
-                }
-            }
-
-            if (filteredMostProbSectors.size() != 0){
-                for (int k = 0; k<filteredMostProbSectors.size(); k++){
-                    for(int kk = 0; kk<map.getaSectors().length; kk++){
-                        if (filteredMostProbSectors.get(k).getSectorId() == map.getaSectors()[kk].getSectorId()){
-                            map.getaSectors()[kk].setLocationProbability(filteredMostProbSectors.get(k).getLocationProbability()*2);
-                        }
-                    }
+                if (physicalDistance <= distanceNearToPrevious){
+                    map.getaSectors()[z].setLocationProbability(map.getaSectors()[z].getLocationProbability()*nearProbMultiplier);
                 }
             }
         }
-
-        */
 
     }
 

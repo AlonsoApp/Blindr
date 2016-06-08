@@ -171,7 +171,7 @@ public class Map {
     }
 
     public Sector getMaxProbabilitySector() {
-        double maxSectorProb = 0;
+        double maxSectorProb = -1;
         Sector resultSector = null;
         for(Sector sector : aSectors)
             if(maxSectorProb<sector.getLocationProbability()){

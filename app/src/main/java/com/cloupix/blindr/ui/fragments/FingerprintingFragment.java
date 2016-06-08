@@ -26,6 +26,7 @@ import com.cloupix.blindr.business.Map;
 import com.cloupix.blindr.business.Sector;
 import com.cloupix.blindr.business.adapters.GridAdapter;
 import com.cloupix.blindr.business.Reading;
+import com.cloupix.blindr.logic.CsvLogic;
 import com.cloupix.blindr.logic.LocationLogic;
 import com.cloupix.blindr.logic.MapLogic;
 import com.cloupix.blindr.logic.WifiLogic;
@@ -41,7 +42,7 @@ import java.util.List;
 public class FingerprintingFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, WifiLogic.WifiLogicScannCallbacks, View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     public static final String ARG_MAP_ID = "map_id";
-    private final int READINGS_PER_LOC = 2; // Numero de lecturas antes de predecir la loc
+    private final int READINGS_PER_LOC = 1; // Numero de lecturas antes de predecir la loc
 
     private GridAdapter gridAdapter;
     private GridView gridView;
@@ -64,6 +65,12 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
 
     private ArrayList<Reading> readingGroup = new ArrayList<>();
     private int contReadings = 0;
+
+    // Recording
+    private long recordingStartTimestamp = 0;
+    private CsvLogic csvLogic;
+    private int testReferenceSector = -1;
+
 
 
     @Override
@@ -208,6 +215,7 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
                 if(wifiLogic == null)
                     wifiLogic = new WifiLogic(getActivity());
                 switch (currentMode){
+                    case GridAdapter.RECORD_TEST_MODE:
                     case GridAdapter.COMPARE_MODE:
                     case GridAdapter.MAPPING_MODE:
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -269,6 +277,22 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
                 double score = map.getScore();
                 Toast.makeText(getContext(), "Score: "+score, Toast.LENGTH_LONG).show();
                 break;
+            case R.id.action_record_test:
+                if(wifiLogic == null)
+                    wifiLogic = new WifiLogic(getActivity());
+                if(currentMode == GridAdapter.RECORD_TEST_MODE){
+                    wifiLogic.stopScan();
+                    stopRecordTest();
+                    gridAdapter.setViewMode(GridAdapter.MAPPING_MODE);
+                    gridAdapter.notifyDataSetChanged();
+
+                    currentMode = GridAdapter.MAPPING_MODE;
+                    item.setIcon(R.mipmap.ic_fiber_manual_record_white_48dp);
+                }else{
+                    startRecordTest(item);
+                    currentMode = GridAdapter.RECORD_TEST_MODE;
+                }
+                break;
             default:
                 break;
         }
@@ -284,20 +308,33 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
         // Aqui hay que guardad (o hacer y guardar) la lectura de los wifis que vea en ese momento con todos sus datos
         // Recomiendo. Poner una barra de progreso mientras (durante un tiempo determinado) se recopilan muestras de los diferentes APs y se marque la casilla con un tick
 
-        Snackbar.make(getView(), getString(R.string.scanning_sector) + position, Snackbar.LENGTH_LONG).setAction("Action", null).show();
+        switch (currentMode){
+            case GridAdapter.MAPPING_MODE:
+
+                Snackbar.make(getView(), getString(R.string.scanning_sector) + position, Snackbar.LENGTH_LONG).setAction("Action", null).show();
 
 
-        // TODO Comprobar si el anterior ha terminado, si no ha termiando, paramos el scanner antes
+                // TODO Comprobar si el anterior ha terminado, si no ha termiando, paramos el scanner antes
 
-        scanningSectorN = position;
+                scanningSectorN = position;
 
-        if(wifiLogic == null)
-            wifiLogic = new WifiLogic(getActivity());
+                if(wifiLogic == null)
+                    wifiLogic = new WifiLogic(getActivity());
 
-        // Limpiamos las lectures anteriores del sector UPDATED: Ya no, ahora las concatenamos
-        //map.getaSectors()[position].getReadings().clear();
-        scanProgressBar.setVisibility(View.VISIBLE);
-        wifiLogic.startScan(this, lecturesPerScan);
+                // Limpiamos las lectures anteriores del sector UPDATED: Ya no, ahora las concatenamos
+                //map.getaSectors()[position].getReadings().clear();
+                scanProgressBar.setVisibility(View.VISIBLE);
+                wifiLogic.startScan(this, lecturesPerScan);
+                break;
+            case GridAdapter.RECORD_TEST_MODE:
+
+                // TODO Emitir un sonido
+                Toast.makeText(getContext(), "Registrado", Toast.LENGTH_SHORT).show();
+
+                this.testReferenceSector = position;
+
+                break;
+        }
 
 
     }
@@ -329,6 +366,11 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
             case GridAdapter.LOCATION_MODE:
                 updateSectorLocationProbabilities(results);
                 break;
+            case GridAdapter.RECORD_TEST_MODE:
+                // Empieza  aguardar cuando le indicamos el primer sector en el que estamos
+                if(testReferenceSector!=-1)
+                    updateSectorTestProbabilities(results);
+                break;
         }
     }
 
@@ -349,6 +391,25 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
 
         currentMode = GridAdapter.LOCATION_MODE;
         item.setIcon(R.mipmap.ic_pause_white_48dp);
+    }
+
+    private void startRecordTest(MenuItem item){
+
+        if(csvLogic==null)
+            csvLogic = new CsvLogic();
+        csvLogic.createCsv();
+
+        recordingStartTimestamp = System.currentTimeMillis();
+        wifiLogic.startScan(this, WifiLogic.SCAN_LOOP_INIFINITE);
+        gridAdapter.setViewMode(GridAdapter.RECORD_TEST_MODE);
+
+        currentMode = GridAdapter.RECORD_TEST_MODE;
+        item.setIcon(R.mipmap.ic_pause_white_48dp);
+    }
+
+    private void stopRecordTest(){
+        recordingStartTimestamp = 0;
+        csvLogic.exportCsv();
     }
 
 
@@ -377,6 +438,38 @@ public class FingerprintingFragment extends Fragment implements AdapterView.OnIt
         }
 
         contReadings = contReadings + 1;
+
+    }
+
+    public void updateSectorTestProbabilities(List<ScanResult> results){
+        for(ScanResult scanResult : results)
+            readingGroup.add(new Reading(scanResult));
+
+        contReadings += 1;
+
+        if(contReadings >= READINGS_PER_LOC){
+            long timestamp = System.currentTimeMillis();
+            long updateTime = timestamp - recordingStartTimestamp;
+            LocationLogic locationLogic = new LocationLogic();
+
+            csvLogic.addRow(updateTime, testReferenceSector);
+            int[] mapTypes = new int[]{Sector.MAPPED_READINGS, Sector.MATH_GENERATED_READINGS, Sector.ALL_READINGS};
+            try{
+                for(int readingType : mapTypes){
+                    locationLogic.getSectorProbabilities(map, readingGroup, readingType);
+                    Sector maxProbSector = map.getMaxProbabilitySector();
+                    //csvLogic.addRow(maxProbSector.getListN(), updateTime, readingType);
+                    csvLogic.addElement(maxProbSector.getListN(), readingType);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            // add to recording csv map.getProbabilityCSVFrament(updateTime)
+            //locationLogic.sendResultPosition(map.getMaxProbabilitySector());
+            readingGroup.clear();
+            contReadings = 0;
+            gridAdapter.notifyDataSetChanged();
+        }
 
     }
 

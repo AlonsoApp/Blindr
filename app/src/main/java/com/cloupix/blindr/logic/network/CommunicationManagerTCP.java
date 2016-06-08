@@ -36,17 +36,6 @@ public class CommunicationManagerTCP {
         dis = new DataInputStream(socket.getInputStream());
     }
 
-	public String sendMsg(String msg) throws IOException {
-		int result = 600;
-
-		dos.writeBytes(msg + CLRF);
-
-		/**Iniciamos espera respuesta USER*/
-		String linea = br.readLine();
-
-		return linea;
-	}
-
 	public ArrayList<Double> getWallLossFactors(String mapFrameworkMapId, double x0, double y0, double x1, double y1) throws Exception {
 
 		/*
@@ -93,8 +82,6 @@ public class CommunicationManagerTCP {
 			}
 		}
 		// TODO Deleteme
-		int size = list.size();
-
 		return list;
 	}
 
