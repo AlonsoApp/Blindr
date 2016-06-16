@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:id="@+id/action_record_test"
+        android:title="@string/action_record_test"
+        app:showAsAction="ifRoom"
+        android:icon="@mipmap/ic_fiber_manual_record_white_48dp"/>
+
+    <item
+        android:id="@+id/action_score"
+        android:title="@string/action_score"
+        app:showAsAction="ifRoom"
+        />
+    <item
+        android:id="@+id/action_compare_mode"
+        android:title="@string/action_compare_mode"
+        app:showAsAction="ifRoom"
+        android:icon="@mipmap/ic_graphic_eq_white_48dp"/>
+
+    <item
+        android:id="@+id/action_location_mode"
+        android:title="@string/action_location_mode"
+        app:showAsAction="ifRoom"
+        android:icon="@mipmap/ic_navigation_white_48dp"/>
+
+    <item
+        android:id="@+id/action_edit"
+        android:title="@string/action_edit"
+        app:showAsAction="ifRoom"
+        android:icon="@mipmap/ic_mode_edit_white_48dp"/>
+
+</menu>

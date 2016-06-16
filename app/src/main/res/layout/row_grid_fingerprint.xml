@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <com.cloupix.blindr.business.SquareRelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <com.cloupix.blindr.business.SquareImageView
@@ -17,14 +17,14 @@
             android:id="@+id/nStroke"
             android:layout_width="match_parent"
             android:layout_height="4dp"
-            android:background="@android:color/holo_blue_light"
+            android:background="@color/wall_on"
             android:layout_alignParentTop="true"/>
 
         <View
             android:id="@+id/eStroke"
             android:layout_width="4dp"
             android:layout_height="match_parent"
-            android:background="@android:color/holo_blue_light"
+            android:background="@color/wall_on"
             android:layout_alignParentEnd="true"/>
 
 
@@ -32,18 +32,61 @@
             android:id="@+id/sStroke"
             android:layout_width="match_parent"
             android:layout_height="4dp"
-            android:background="@android:color/holo_blue_light"
+            android:background="@color/wall_on"
             android:layout_alignParentBottom="true"/>
 
         <View
             android:id="@+id/wStroke"
             android:layout_width="4dp"
             android:layout_height="match_parent"
-            android:background="@android:color/holo_blue_light"
+            android:background="@color/wall_on"
             android:layout_alignParentStart="true"/>
 
+        <View
+            android:id="@+id/neswStroke"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_marginEnd="-100dp"
+            android:layout_marginStart="-100dp"
+            android:rotation="-45"
+            android:background="@color/wall_on"
+            android:layout_centerInParent="true"/>
+        <View
+            android:id="@+id/nwseStroke"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_marginEnd="-100dp"
+            android:layout_marginStart="-100dp"
+            android:rotation="45"
+            android:background="@color/wall_on"
+            android:layout_centerInParent="true"/>
 
+        <ImageView
+            android:id="@+id/imgViewCircle"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_margin="5dp"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/purple_circle"/>
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/textViewApNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:textColor="@android:color/white"
+            android:textSize="19sp"
+            android:gravity="center"
+            android:fontFamily="sans-serif-light"
+            android:text="1"/>
+
+        <TextView
+            android:id="@+id/textViewProbability"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center" />
+
+    </com.cloupix.blindr.business.SquareRelativeLayout>
 
 </LinearLayout>

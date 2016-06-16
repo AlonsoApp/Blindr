@@ -1,0 +1,75 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/map_background"><!--
+    tools:context=".ui.fragments.WifiAPDetailFragment"
+    tools:showIn="@layout/activity_fingerprinting">-->
+
+
+    <TextView
+        android:id="@+id/textViewSSID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Loading..."
+        android:textSize="25sp"
+        android:fontFamily="sans-serif-condensed"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/textViewBSSID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewSSID"
+        android:text="Loading..."/>
+
+    <TextView
+        android:id="@+id/textViewRSSILabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewBSSID"
+        android:layout_marginTop="15dp"
+        android:text="RSSI:"/>
+    <TextView
+        android:id="@+id/textViewRSSI"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_toEndOf="@+id/textViewRSSILabel"
+        android:layout_alignBaseline="@+id/textViewRSSILabel"
+        android:textColor="@android:color/holo_red_light"/>
+
+    <TextView
+        android:id="@+id/textViewAverageRSSILabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewRSSILabel"
+        android:layout_marginTop="15dp"
+        android:text="Av. RSSI:"/>
+    <TextView
+        android:id="@+id/textViewAverageRSSI"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_toEndOf="@+id/textViewAverageRSSILabel"
+        android:layout_alignBaseline="@+id/textViewAverageRSSILabel"/>
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/lineChart"
+        android:layout_below="@+id/textViewAverageRSSILabel"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="120dp" />
+
+
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/barChart"
+        android:layout_below="@+id/lineChart"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="220dp" />
+</RelativeLayout>

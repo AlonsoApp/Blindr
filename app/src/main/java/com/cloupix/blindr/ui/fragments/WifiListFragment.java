@@ -1,37 +1,34 @@
 package com.cloupix.blindr.ui.fragments;
 
-import android.content.BroadcastReceiver;
+import android.app.ListFragment;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.cloupix.blindr.R;
-import com.cloupix.blindr.business.WifiAPListAdapter;
+import com.cloupix.blindr.business.adapters.WifiAPListAdapter;
+import com.cloupix.blindr.logic.WifiLogic;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.util.List;
 
 /**
  * Created by alonsousa on 6/12/15.
  *
  */
-public class WifiListFragment extends ListFragment {
+public class WifiListFragment extends ListFragment implements WifiLogic.WifiLogicScannCallbacks {
 
     private WifiAPListAdapter listAdapter;
     private View viewFooter;
     private WifiManager wifi;
+    private WifiLogic wifiLogic;
+
+    private WifiListFragmentCallbacks mCallbacks;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,21 +52,51 @@ public class WifiListFragment extends ListFragment {
         super.onResume();
 
         /*
-        listAdapter.addWifiAP(new WifiAP("Drama", "MC2", new ArrayList<WifiAPLecture>() {{
-            add(new WifiAPLecture(-20));
+        listAdapter.addWifiAP(new WifiAP("Drama", "MC2", new ArrayList<Reading>() {{
+            add(new Reading(-20));
         }}));
-        listAdapter.addWifiAP(new WifiAP("Zarrator", "MC3", new ArrayList<WifiAPLecture>(){{ add(new WifiAPLecture(-30));}}));
-        listAdapter.addWifiAP(new WifiAP("Alatzas", "MC4", new ArrayList<WifiAPLecture>(){{ add(new WifiAPLecture(-40));}}));
-        listAdapter.addWifiAP(new WifiAP("Ludee", "MC5", new ArrayList<WifiAPLecture>(){{ add(new WifiAPLecture(-50));}}));
+        listAdapter.addWifiAP(new WifiAP("Zarrator", "MC3", new ArrayList<Reading>(){{ add(new Reading(-30));}}));
+        listAdapter.addWifiAP(new WifiAP("Alatzas", "MC4", new ArrayList<Reading>(){{ add(new Reading(-40));}}));
+        listAdapter.addWifiAP(new WifiAP("Ludee", "MC5", new ArrayList<Reading>(){{ add(new Reading(-50));}}));
         listAdapter.notifyDataSetChanged();
         */
-        scann();
+
+        if(wifiLogic==null)
+            wifiLogic = new WifiLogic(getActivity());
+
+        wifiLogic.startScan(this, WifiLogic.SCAN_LOOP_INIFINITE);
 
         // Esto va en el load
         getListView().removeFooterView(viewFooter);
         if(listAdapter.getCount()>0) {
             getListView().addFooterView(viewFooter);
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if(wifiLogic==null)
+            wifiLogic = new WifiLogic(getActivity());
+
+        wifiLogic.stopScan();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mCallbacks = (WifiListFragmentCallbacks) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()+ " must implement NavigationDrawerCallbacks.");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
     }
 
     @Override
@@ -87,61 +114,31 @@ public class WifiListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        /*
-        ChangeConfigDialog changeConfigDialog = new ChangeConfigDialog();
-        changeConfigDialog.setRoom(list.get(position));
-        changeConfigDialog.setChangeConfigDialogCallbacks(this);
-        changeConfigDialog.show(getActivity().getFragmentManager(), "ChangeConfigDialogListener");
-        */
+
+        // Sacamos el BSSI del AP d ela posición position
+        String bssi = listAdapter.getBSSI(position);
+
+        mCallbacks.onWifiAPClick(bssi);
     }
 
-    // TODO ordenar la lista en función de RSSID (mirar que pasa con el 3 que tiene el SSID en blanco)(mostrar más datos)
-    private void scann(){
-        wifi = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
-        if (!wifi.isWifiEnabled())
-        {
-            Toast.makeText(getActivity().getApplicationContext(), getString(R.string.wifi_disabled), Toast.LENGTH_LONG).show();
-            wifi.setWifiEnabled(true);
-        }
-        //this.adapter = new SimpleAdapter(WiFiDemo.this, arraylist, R.layout.row, new String[] { ITEM_KEY }, new int[] { R.id.list_value });
-        //lv.setAdapter(this.adapter);
-
-        getActivity().registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context c, Intent intent) {
-                try {
-
-                    List<ScanResult> results = wifi.getScanResults();
-                    listAdapter.addScanResultList(results);
-                    listAdapter.notifyDataSetChanged();
-                    wifi.startScan();
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-
-        wifi.startScan();
+    @Override
+    public void onReceive(List<ScanResult> results, int loopCounter) {
+        listAdapter.addScanResultList(results);
+        listAdapter.notifyDataSetChanged();
     }
 
-    // Network
+    @Override
+    public void onScanFinished() {
 
-    private void sendData(){
-        try {
-
-            String text;
-            int server_port = 21567;
-            byte[] message = new byte[1500];
-            DatagramPacket p = new DatagramPacket(message, message.length);
-            DatagramSocket s = new DatagramSocket(server_port);
-            s.receive(p);
-            text = new String(message, 0, p.getLength());
-            Log.d("Udp tutorial", "message:" + text);
-            s.close();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
     }
 
+
+    /**
+     * Callbacks interface that all activities using this fragment must implement.
+     */
+    public interface WifiListFragmentCallbacks {
+
+        void onWifiAPClick(String bssi);
+    }
 }
 

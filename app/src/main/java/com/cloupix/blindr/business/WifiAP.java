@@ -1,18 +1,25 @@
 package com.cloupix.blindr.business;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.cloupix.blindr.business.comparators.LevelMapComparator;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.TreeMap;
 
 /**
  * Created by alonsousa on 6/12/15.
  *
  */
-public class WifiAP {
+public class WifiAP implements Parcelable {
 
 
     /**
      * The network name.
      */
-    public String SSID;
+    private String SSID;
 
     /**
      * Ascii encoded SSID. This will replace SSID when we deprecate it. @hide
@@ -23,31 +30,33 @@ public class WifiAP {
     /**
      * The address of the access point.
      */
-    public String BSSID;
+    private String BSSID;
 
-    private ArrayList<WifiAPLecture> lectures;
+    private ArrayList<Reading> readings;
 
     public WifiAP() {
+        this.readings = new ArrayList<Reading>();
     }
 
     public WifiAP(String SSID, String BSSID) {
         this.SSID = SSID;
         this.BSSID = BSSID;
+        this.readings = new ArrayList<Reading>();
     }
 
-    public WifiAP(String SSID, String BSSID, ArrayList<WifiAPLecture> lectures) {
+    public WifiAP(String SSID, String BSSID, ArrayList<Reading> readings) {
         this.SSID = SSID;
         this.BSSID = BSSID;
-        this.lectures = lectures;
+        this.readings = readings;
     }
 
-    public WifiAP(String SSID, String BSSID, final WifiAPLecture lecture) {
+    public WifiAP(String SSID, String BSSID, final Reading reading) {
         this.SSID = SSID;
         this.BSSID = BSSID;
-        this.lectures = new ArrayList<WifiAPLecture>(){{add(lecture);}};
+        this.readings = new ArrayList<Reading>(){{add(reading);}};
     }
 
-    public String getSSSID() {
+    public String getSSID() {
         return SSID;
     }
 
@@ -55,27 +64,93 @@ public class WifiAP {
         return BSSID;
     }
 
-    public ArrayList<WifiAPLecture> getLectures() {
-        return lectures;
+    public ArrayList<Reading> getReadings() {
+        return readings;
     }
 
     public void setSSID(String ssid) {
         this.SSID = ssid;
     }
 
-    public void setBSSID(String mac) {
+    public void setBSSID(String BSSID) {
         this.BSSID = BSSID;
     }
 
-    public void setLectures(ArrayList<WifiAPLecture> lectures) {
-        this.lectures = lectures;
+    public void setReadings(ArrayList<Reading> readings) {
+        this.readings = readings;
     }
 
-    public void addWifiAPLecture(WifiAPLecture lecture) {
-        lectures.add(lecture);
+    public void addWifiAPReading(Reading reading) {
+        readings.add(reading);
     }
 
-    public void addWifiAPLectures(ArrayList<WifiAPLecture> lectures) {
-        lectures.addAll(lectures);
+    public void addWifiAPReadings(ArrayList<Reading> readings) {
+        readings.addAll(readings);
     }
+
+    public int getAverageRSSI(){
+        int[] levels = new int[readings.size()];
+        for (int i = 0; i< readings.size(); i++){
+            levels[i] = readings.get(i).getLevel();
+        }
+        // Si queremos quitar los valores más bajos y más altos de la media tendríamos que ordenar y
+        // podar el array aqui
+        int totalLevel = 0;
+        for(int level : levels){
+            totalLevel += level;
+        }
+        return totalLevel/levels.length;
+    }
+
+    public TreeMap<Integer, Integer> getLevelHistogram(){
+        HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+
+        // Ordenamos la lista
+        //Collections.sort(readings, new WifiAPLectureComparator());
+
+        for (Reading reading : readings) {
+            if (map.containsKey(reading.getLevel())) {
+                map.put(reading.getLevel(), map.get(reading.getLevel())+1);
+            }else{
+                map.put(reading.getLevel(), 1);
+            }
+        }
+
+        LevelMapComparator lmc = new LevelMapComparator(map);
+        TreeMap sorted_map = new TreeMap(lmc);
+
+
+        sorted_map.putAll(map);
+        System.out.println("results: " + sorted_map);
+
+        return sorted_map;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(SSID);
+        dest.writeString(BSSID);
+    }
+
+    protected WifiAP(Parcel in) {
+        SSID = in.readString();
+        BSSID = in.readString();
+    }
+
+    public static final Creator<WifiAP> CREATOR = new Creator<WifiAP>() {
+        @Override
+        public WifiAP createFromParcel(Parcel in) {
+            return new WifiAP(in);
+        }
+
+        @Override
+        public WifiAP[] newArray(int size) {
+            return new WifiAP[size];
+        }
+    };
 }

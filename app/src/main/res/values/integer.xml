@@ -1,7 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Aqui estableces la resolución del mapa 9x10 sectores. Para hacer mejor el diseño voy a
+    sacar el array de N,S,E,W aqui para que tengas el configurador del mapa to_do en el mismo sitio -->
     <integer name="sector_height">9</integer>
     <integer name="sector_width">10</integer>
 
+    <integer-array name="sector_n">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>35</item>
+        <item>36</item>
+        <item>37</item>
+        <item>38</item>
+        <item>39</item>
+        <item>40</item>
+        <item>41</item>
+        <item>42</item>
+        <item>43</item>
+    </integer-array>
+
+    <integer-array name="sector_e">
+        <item>4</item>
+        <item>9</item>
+        <item>14</item>
+        <item>19</item>
+        <item>29</item>
+        <item>39</item>
+        <item>44</item>
+        <item>49</item>
+        <item>54</item>
+        <item>59</item>
+        <item>64</item>
+        <item>69</item>
+        <item>74</item>
+        <item>79</item>
+        <item>84</item>
+        <item>89</item>
+    </integer-array>
+
+    <integer-array name="sector_s">
+        <item>80</item>
+        <item>81</item>
+        <item>82</item>
+        <item>83</item>
+        <item>84</item>
+        <item>85</item>
+        <item>86</item>
+        <item>87</item>
+        <item>88</item>
+        <item>89</item>
+    </integer-array>
+
+    <integer-array name="sector_w">
+        <item>0</item>
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+        <item>70</item>
+        <item>80</item>
+    </integer-array>
 </resources>

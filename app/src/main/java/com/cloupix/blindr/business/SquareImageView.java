@@ -7,6 +7,9 @@ import android.widget.ImageView;
 /**
  * Created by alonsousa on 15/12/15.
  *
+ * Creo que esto lo hice para hacer una imagen siempre cuadrada y proporcional
+ * (es una parte de las celdas, I have no memory of this place)
+ *
  */
 public class SquareImageView extends ImageView {
     public SquareImageView(Context context) {
