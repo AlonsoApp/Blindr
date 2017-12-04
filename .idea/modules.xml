@@ -3,8 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Blindr.iml" filepath="$PROJECT_DIR$/Blindr.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Blindr-Android.iml" filepath="$PROJECT_DIR$/Blindr-Android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
